@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MAQON — Central de Alertas e Tarefas</title>
+<style>
+*{box-sizing:border-box} body{margin:0;background:#071116;color:#eef4f6;font:14px Arial,sans-serif}
+main{max-width:1250px;margin:22px auto;padding:20px} h1,h2{color:#ffc800}
+p{color:#d5e0e4}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.card{background:#101d22;border:1px solid #334249;border-radius:9px;padding:18px;margin:14px 0}
+.stat small{color:#b8cbd2}.stat strong{display:block;color:#ffc800;font-size:30px;margin-top:7px}
+.form{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:10px}
+label{display:block;color:#bfe1ee;font-size:12px;margin-bottom:5px}
+input,select,textarea{width:100%;background:#071116;color:white;border:1px solid #53636a;border-radius:6px;padding:11px}
+textarea{min-height:75px;resize:vertical}.wide{grid-column:1/-1}
+button{border:0;border-radius:6px;padding:11px 15px;font-weight:700;cursor:pointer;background:#ffc800;color:#071116}
+button.secondary{background:#263940;color:#fff}.actions{display:flex;gap:8px;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:11px;border-bottom:1px solid #334249;vertical-align:top}
+th{color:#ffc800}.badge{display:inline-block;border-radius:13px;padding:5px 9px;background:#263940}
+.badge.atrasada{background:#71352f}.badge.hoje{background:#715d16}.badge.concluida{background:#20583d}
+.empty{text-align:center;color:#8ca1a9;padding:25px}
+@media(max-width:800px){.grid,.form{grid-template-columns:1fr}.tablewrap{overflow:auto}}
+</style>
+</head>
+<body><main id="app"></main><script src="maqon-alertas.js"></script></body>
+</html>

@@ -1,0 +1,18 @@
+MAQON MVP CONSOLIDADO — 25/09/2026
+
+Pacote consolidado para substituir o conteúdo atual do repositório GitHub.
+Fluxo priorizado:
+Diagnóstico -> CRM -> Análise Técnica -> Proposta -> Negociação -> Fechado -> Pós-venda -> Alertas.
+
+Correções consolidadas:
+- Cadastro completo de lead.
+- Diagnóstico cria/atualiza lead sem duplicação por contato.
+- CRM encaminha dados para Análise Técnica.
+- Score técnico persiste no lead e no funil.
+- Negociação preserva modalidade, orçamento e acompanhamento.
+- IDs comparados de forma consistente para evitar abrir cliente errado.
+- Fechamento cria projeto de pós-venda do cliente correto.
+- Pós-venda salva e recupera dados por ID do cliente.
+- Alertas leem próximo contato, prazo do projeto e data prevista de entrega.
+
+IMPORTANTE: localStorage do navegador mantém os dados já cadastrados; os arquivos do GitHub não carregam esses dados dentro do ZIP.
