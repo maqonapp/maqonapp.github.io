@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MAQON | Painel de Controle V4.1</title>
+<title>MAQON | Painel de Controle V1.0</title>
 <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
@@ -13,6 +13,7 @@
     <div class="user-avatar">●</div><b>Renan Rabelo</b><small>Administrador</small><span class="online">● Online</span>
   </div>
   <nav>
+    <button class="nav nav-back" id="maqonBack" type="button">← <span>Voltar</span></button>
     <button class="nav active" data-view="dashboard">⌂ <span>Visão Geral</span></button>
     <button class="nav" data-view="leads">♟ <span>Leads / Clientes</span></button>
     <button class="nav" data-view="equipamentos">♜ <span>Equipamentos</span></button>
@@ -39,12 +40,12 @@
   </div>
 
   <div class="cards">
-    <article><span class="kpi-title"><i>♟</i>Total de Leads</span><strong id="kpiTotal">248</strong><em>↑ 12%</em><div class="spark">▂▃▄▅▆▇</div></article>
-    <article><span class="kpi-title"><i>▤</i>Novos Leads</span><strong id="kpiNew">79</strong><em>↑ 28%</em><div class="spark">▂▃▄▅▆▇</div></article>
-    <article><span class="kpi-title"><i>◉</i>Em Atendimento</span><strong id="kpiService">86</strong><em>↑ 15%</em><div class="spark">▂▃▄▅▆▇</div></article>
-    <article><span class="kpi-title"><i>➤</i>Propostas Enviadas</span><strong id="kpiProposal">46</strong><em>↑ 21%</em><div class="spark">▂▃▄▅▆▇</div></article>
-    <article><span class="kpi-title"><i>◆</i>Clientes Convertidos</span><strong id="kpiClient">27</strong><em>↑ 35%</em><div class="spark">▂▃▄▅▆▇</div></article>
-    <article><span class="kpi-title"><i>%</i>Taxa de Conversão</span><strong id="kpiConversion">10,9%</strong><em>↑ 2,8 p.p.</em><div class="spark">▂▃▄▅▆▇</div></article>
+    <article><span class="kpi-title"><i>♟</i>Total de Leads</span><strong id="kpiTotal">0</strong><em class="live-label">Dados reais</em></article>
+    <article><span class="kpi-title"><i>▤</i>Novos Leads</span><strong id="kpiNew">0</strong><em class="live-label">Dados reais</em></article>
+    <article><span class="kpi-title"><i>◉</i>Em Atendimento</span><strong id="kpiService">0</strong><em class="live-label">Dados reais</em></article>
+    <article><span class="kpi-title"><i>➤</i>Propostas Enviadas</span><strong id="kpiProposal">0</strong><em class="live-label">Dados reais</em></article>
+    <article><span class="kpi-title"><i>◆</i>Clientes Convertidos</span><strong id="kpiClient">0</strong><em class="live-label">Dados reais</em></article>
+    <article><span class="kpi-title"><i>%</i>Taxa de Conversão</span><strong id="kpiConversion">0,0%</strong><em class="live-label">Dados reais</em></article>
   </div>
 
   <div class="grid">
@@ -57,13 +58,10 @@
         <div><span>✓ Clientes</span><b>27</b><small>11%</small></div>
       </div>
     </article>
-    <article class="panel evolution"><h2>Evolução de Leads <span class="chart-legend">● Novos Leads　○ Leads Convertidos</span></h2>
-      <div class="chart" id="bars"></div>
-      <div class="dates"><span>01/09</span><span>05/09</span><span>10/09</span><span>15/09</span><span>20/09</span><span>25/09</span><span>30/09</span></div>
-    </article>
+    <article class="panel evolution"><h2>Evolução de Leads</h2><div id="evolutionEmpty" style="padding:42px 16px;text-align:center;opacity:.72">O histórico será formado automaticamente com os novos registros.</div></article>
     <article class="panel origin"><h2>Origem dos Leads</h2>
-      <div class="origin-wrap"><div class="donut"><b>248</b><span>Leads</span></div>
-      <div class="legend"><p><i class="c1"></i>Site <b>35%</b></p><p><i class="c2"></i>WhatsApp <b>28%</b></p><p><i class="c3"></i>LinkedIn <b>18%</b></p><p><i class="c4"></i>Indicação <b>12%</b></p><p><i class="c5"></i>Outros <b>7%</b></p></div></div>
+      <div class="origin-wrap"><div class="donut"><b>0</b><span>Leads</span></div>
+      <div class="legend" id="originLegend"><p>Sem leads cadastrados.</p></div></div>
     </article>
   </div>
 
@@ -92,15 +90,15 @@
 <section id="equipamentos" class="view"><h1>Equipamentos</h1><article class="panel"><div style="display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap"><input id="equipmentSearch" placeholder="Pesquisar equipamento..." style="min-width:280px"><button class="primary" id="newEquipment">＋ Novo Equipamento</button></div><table><thead><tr><th>Categoria</th><th>Fabricante</th><th>Modelo</th><th>Ano</th><th>Horímetro</th><th>Valor</th><th>Consumo</th><th>Manutenção</th><th>Disponibilidade</th><th>Situação</th><th>Ações</th></tr></thead><tbody id="equipmentRows"></tbody></table></article></section>
 <section id="comparativos" class="view"><h1>Comparativos</h1><article class="panel"><h2>Comparativo de Máquinas</h2><p>Selecione até 3 equipamentos cadastrados para comparar lado a lado.</p><div style="display:grid;grid-template-columns:repeat(3,minmax(220px,1fr));gap:12px;margin:18px 0"><label>Máquina 1<select id="compare1"></select></label><label>Máquina 2<select id="compare2"></select></label><label>Máquina 3<select id="compare3"></select></label></div><div style="overflow:auto"><table><thead><tr><th>Indicador</th><th id="compareHead1">Máquina 1</th><th id="compareHead2">Máquina 2</th><th id="compareHead3">Máquina 3</th></tr></thead><tbody id="compareRows"></tbody></table></div><p id="compareSummary" style="margin-top:16px"></p></article></section>
 <section id="analises" class="view"><h1>Análises Técnicas</h1><article class="panel"><h2>MAQON Engine — Análise de Equipamento</h2><p>Selecione um equipamento cadastrado para gerar os indicadores técnicos automaticamente.</p><div style="display:flex;gap:14px;align-items:end;flex-wrap:wrap;margin:18px 0"><label style="min-width:320px;flex:1">Equipamento<select id="analysisEquipment"></select></label><button class="primary" id="runAnalysis" type="button">⌁ Gerar Análise</button></div><div class="cards compact"><article><span>Custo Operacional / h</span><strong id="analysisCost">—</strong></article><article><span>Disponibilidade</span><strong id="analysisAvailability">—</strong></article><article><span>Score MAQON</span><strong id="analysisScore">—</strong></article></div><div style="overflow:auto;margin-top:18px"><table><tbody id="analysisRows"></tbody></table></div><p id="analysisSummary" style="margin-top:16px"></p></article></section>
-<section id="manutencao" class="view"><h1>Manutenção</h1><article class="panel"><h2>Planejamento de Manutenção</h2><p>Preventiva, corretiva e preditiva com histórico e alertas.</p></article></section>
-<section id="integracoes" class="view"><h1>Integrações</h1><article class="panel"><h2>Central de Integrações</h2><p>HubSpot, Google Sheets, WhatsApp e automações.</p></article></section>
+<section id="manutencao" class="view"><h1>Manutenção</h1><article class="panel"><h2>Planejamento de Manutenção</h2><p>Preventiva, corretiva e preditiva com histórico e alertas.</p><div class="modulecards compact"><article>⚙<b>Preventiva</b><span>Planeje revisões por prazo e horímetro.</span></article><article>🛠<b>Corretiva</b><span>Registre ocorrências e acompanhe pendências.</span></article><article>📈<b>Preditiva</b><span>Use disponibilidade, consumo e histórico para apoiar decisões.</span></article></div><p style="margin-top:18px"><button class="primary" type="button" onclick="location.href='maqon-alertas.html'">Abrir alertas e tarefas →</button></p></article></section>
+<section id="integracoes" class="view"><h1>Integrações</h1><article class="panel"><h2>Central de Canais e Integrações</h2><p>Cadastre os endereços oficiais da MAQON. Os botões passam a abrir cada canal diretamente; integrações por API/OAuth exigem credenciais do serviço e backend seguro.</p><div id="integrationCards" class="integration-grid"></div></article></section>
 <section id="propostas" class="view"><h1>Propostas</h1><article class="panel"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><h2>Gestão de Propostas Comerciais</h2><p><strong id="proposalCount">0</strong> propostas cadastradas • <strong id="proposalSentCount">0</strong> enviadas</p></div><button class="primary" id="newProposal">＋ Nova Proposta</button></div><input id="proposalSearch" placeholder="Pesquisar proposta..." style="min-width:280px;margin:14px 0"><div style="overflow:auto"><table><thead><tr><th>#</th><th>Cliente</th><th>Empresa</th><th>Equipamento</th><th>Modalidade</th><th>Valor</th><th>Validade</th><th>Status</th><th>Ações</th></tr></thead><tbody id="proposalRows"></tbody></table></div></article></section>
-<section id="financeiro" class="view"><h1>Financeiro</h1><article class="panel"><h2>Pipeline estimado: R$ 486 mil</h2></article></section>
-<section id="relatorios" class="view"><h1>Relatórios</h1><article class="panel">Relatórios executivos, técnicos e comerciais.</article></section>
-<section id="config" class="view"><h1>Configurações</h1><article class="panel">Integrações HubSpot, Google Sheets e automações.</article></section>
+<section id="financeiro" class="view"><h1>Financeiro</h1><article class="panel"><h2>Pipeline comercial</h2><p>Valor total das propostas cadastradas</p><strong id="financePipeline" style="font-size:32px">R$ 0,00</strong></article></section>
+<section id="relatorios" class="view"><h1>Relatórios</h1><article class="panel"><h2>Relatório Executivo MAQON</h2><p>Resumo dos dados comerciais armazenados nesta instalação.</p><div class="cards compact"><article><span>Leads</span><strong id="reportLeads">0</strong></article><article><span>Clientes fechados</span><strong id="reportClients">0</strong></article><article><span>Pipeline</span><strong id="reportPipeline">R$ 0,00</strong></article></div><button class="primary" id="printReport" type="button">Imprimir / Salvar em PDF</button></article></section>
+<section id="config" class="view"><h1>Configurações</h1><article class="panel"><h2>Dados da plataforma e canais</h2><p><b>Produto:</b> MAQON — Consultoria em Equipamentos Pesados</p><p><b>Versão:</b> V1.0 Comercial</p><form id="channelForm" class="settings-grid"><label>E-mail<input id="cfgEmail" type="email" value="maqonapp@gmail.com"></label><label>WhatsApp (somente números, com DDI)<input id="cfgWhatsapp" value="5598992202920"></label><label>Instagram<input id="cfgInstagram" placeholder="https://instagram.com/..."></label><label>Facebook<input id="cfgFacebook" placeholder="https://facebook.com/..."></label><label>LinkedIn<input id="cfgLinkedin" placeholder="https://linkedin.com/company/..."></label><label>HubSpot<input id="cfgHubspot" placeholder="https://app.hubspot.com/..."></label><label>Google Sheets<input id="cfgSheets" placeholder="https://docs.google.com/spreadsheets/..."></label><div><button class="primary" type="submit">Salvar canais</button></div></form><p class="muted-note">Por segurança, tokens, senhas e chaves de API não devem ser gravados no GitHub Pages.</p></article></section>
 </main>
 
-<footer><b>MAQON</b><span class="foot-left">CONSULTORIA EM EQUIPAMENTOS PESADOS　|　✉ maqonapp@gmail.com　|　PLANEJAMENTO　|　ANÁLISE　|　CUSTO-BENEFÍCIO　|　DISPONIBILIDADE　|　PRODUTIVIDADE　|　SEGURANÇA</span><span class="foot-right">Máquinas em movimento. Resultados para você.　 <strong>V4.1</strong>　● Online</span></footer>
+<footer><b>MAQON</b><span class="foot-left">CONSULTORIA EM EQUIPAMENTOS PESADOS　|　✉ maqonapp@gmail.com　|　PLANEJAMENTO　|　ANÁLISE　|　CUSTO-BENEFÍCIO　|　DISPONIBILIDADE　|　PRODUTIVIDADE　|　SEGURANÇA</span><span class="foot-right">Máquinas em movimento. Resultados para você.　 <strong>V1.0</strong>　● Online</span></footer>
 
 <dialog id="leadDialog" class="lead-dialog"><form id="leadForm"><h2 id="leadDialogTitle">Novo Lead</h2>
 <div class="lead-grid">

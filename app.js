@@ -1,13 +1,6 @@
 const STORAGE_KEY='maqon_leads_v1';
-const seedLeads=[
-['30/09/2026','Marcos Oliveira','Construtora Vale','(98) 99123-4567','Escavadeira','Novo Lead','Qualificação','Site'],
-['30/09/2026','Ana Paula Santos','Transportes Lima','(11) 98765-4321','Munck','Em Atendimento','Diagnóstico','WhatsApp'],
-['29/09/2026','Carlos Mendes','Mendes Engenharia','(62) 99876-1234','Motoniveladora','Proposta Enviada','Proposta','LinkedIn'],
-['29/09/2026','João Ribeiro','Ribeiro Terraplenagem','(85) 99654-3210','Caminhão Basculante','Negociação','Negociação','Indicação'],
-['28/09/2026','Fernanda Costa','Costa Logística','(31) 98987-6543','Retroescavadeira','Cliente','Fechado','Site']
-];
 let leads=loadLeads(); let editingIndex=null;
-function loadLeads(){try{const x=JSON.parse(localStorage.getItem(STORAGE_KEY));return Array.isArray(x)?x:seedLeads.map(x=>[...x])}catch(e){return seedLeads.map(x=>[...x])}}
+function loadLeads(){try{const x=JSON.parse(localStorage.getItem(STORAGE_KEY));return Array.isArray(x)?x:[]}catch(e){return []}}
 function persist(){localStorage.setItem(STORAGE_KEY,JSON.stringify(leads))}
 function esc(v=''){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 function badge(v){return `<span class="badge" data-status="${esc(v)}">${esc(v)}</span>`}
@@ -33,12 +26,21 @@ function updateKPIs(){
  }
  const total=leads.length,service=leads.filter(x=>x[5]==='Em Atendimento').length,proposal=leads.filter(x=>x[5]==='Proposta Enviada').length,negotiation=leads.filter(x=>x[5]==='Negociação').length,clients=leads.filter(x=>x[5]==='Cliente').length; const set=(id,v)=>{const e=document.querySelector(id);if(e)e.textContent=v};set('#kpiTotal',total);set('#kpiNew',leads.filter(x=>x[5]==='Novo Lead').length);set('#kpiService',service);set('#kpiProposal',proposal);set('#kpiClient',clients);set('#kpiConversion',total?`${(clients/total*100).toFixed(1).replace('.',',')}%`:'0,0%'); const donut=document.querySelector('.donut b');if(donut)donut.textContent=total; const funnelValues=[total,service,proposal,negotiation,clients];document.querySelectorAll('.funnel>div').forEach((row,i)=>{const value=funnelValues[i]??0;const b=row.querySelector('b'),small=row.querySelector('small');if(b)b.textContent=value;if(small)small.textContent=(i===0?(total?100:0):(total?Math.round(value/total*100):0))+'%'})
 }
-function render(){renderRecent();renderAll();updateKPIs()}
+function render(){renderRecent();renderAll();updateKPIs();setTimeout(()=>{try{renderLiveSummary()}catch(e){}},0)}
+function renderLiveSummary(){
+ const crm=loadCRMLeads();
+ const source=crm.length?crm.map(l=>l.origem||'Outro'):leads.map(l=>l[7]||'Outro');
+ const total=source.length, counts={};source.forEach(o=>{const k=o||'Outro';counts[k]=(counts[k]||0)+1});
+ const legend=document.querySelector('#originLegend');if(legend){legend.innerHTML=total?Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<p>${esc(k)} <b>${Math.round(v/total*100)}%</b></p>`).join(''):'<p>Sem leads cadastrados.</p>'}
+ const pipe=document.querySelector('#financePipeline');if(pipe){const sum=(typeof proposals!=='undefined'?proposals:[]).reduce((a,p)=>a+(Number(p.value)||0),0);pipe.textContent=brl(sum)||'R$ 0,00'}
+}
+
+// Remove apenas o conjunto demonstrativo legado conhecido, sem tocar nos dados reais do usuário.
+try{const demo=['Marcos Oliveira','Ana Paula Santos','Carlos Mendes','João Ribeiro','Fernanda Costa'];if(leads.length===5&&demo.every((n,i)=>leads[i]&&leads[i][1]===n)){localStorage.removeItem(STORAGE_KEY);leads=[]}}catch(e){}
 render();
-const heights=[38,54,48,66,42,72,58,47,78,52,69,43,62,86,55,49,74,44,67,59,82,51,70,91];
-heights.forEach(h=>{const b=document.createElement('i');b.style.height=h+'%';document.querySelector('#bars').appendChild(b)});
+
 function go(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.querySelector('#'+id).classList.add('active');document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.view===id))}
-document.querySelectorAll('.nav').forEach(n=>n.onclick=()=>{if(n.dataset.href){location.href=n.dataset.href;return}go(n.dataset.view)});document.querySelectorAll('[data-go]').forEach(n=>n.onclick=()=>go(n.dataset.go));
+document.querySelectorAll('.nav').forEach(n=>n.onclick=()=>{if(n.id==='maqonBack'){const active=document.querySelector('.view.active');if(active&&active.id!=='dashboard')go('dashboard');else if(history.length>1)history.back();return}if(n.dataset.href){location.href=n.dataset.href;return}go(n.dataset.view)});document.querySelectorAll('[data-go]').forEach(n=>n.onclick=()=>go(n.dataset.go));
 const d=document.querySelector('#leadDialog'),form=document.querySelector('#leadForm');
 function openLead(index=null){editingIndex=index;document.querySelector('#leadDialogTitle').textContent=index===null?'Novo Lead':'Editar Lead';if(index===null){form.reset();document.querySelector('#leadStatus').value='Novo Lead';document.querySelector('#leadPhase').value='Qualificação';document.querySelector('#leadOrigin').value='Manual';document.querySelector('#leadOwner').value='Renan';document.querySelector('#leadMode').value='Compra'}else{const x=leads[index];document.querySelector('#name').value=x[1]||'';document.querySelector('#company').value=x[2]||'';document.querySelector('#phone').value=x[3]||'';document.querySelector('#interest').value=x[4]||'Escavadeira';document.querySelector('#leadStatus').value=x[5]||'Novo Lead';document.querySelector('#leadPhase').value=x[6]||'Qualificação';document.querySelector('#leadOrigin').value=x[7]||'Manual';document.querySelector('#leadEmail').value=x[8]||'';document.querySelector('#leadCity').value=x[9]||'';document.querySelector('#leadUF').value=x[10]||'';document.querySelector('#leadBrandModel').value=x[11]||'';document.querySelector('#leadMode').value=x[12]||'Compra';document.querySelector('#leadBudget').value=x[13]||'';document.querySelector('#leadOwner').value=x[14]||'Renan';document.querySelector('#leadNeed').value=x[15]||'';document.querySelector('#leadNotes').value=x[16]||''}d.showModal()}
 document.querySelector('#newLead').onclick=()=>openLead();document.querySelector('#quickLead').onclick=()=>openLead();document.querySelector('#cancelLead').onclick=()=>d.close();
@@ -64,7 +66,12 @@ document.querySelector('#search').oninput=e=>{const q=e.target.value.toLowerCase
 const EQUIPMENT_KEY='maqon_equipamentos_v1';
 const seedEquipment=[['Escavadeira','Caterpillar','320','2024','1250','850000','18.5','42','94','Ativo'],['Pá Carregadeira','Volvo','L90H','2023','2100','780000','15.8','38','92','Ativo'],['Guindaste','SANY','STC250T5','2024','980','1250000','22','55','96','Disponível']];
 let equipments=loadEquipment(),editingEquipment=null;
-function loadEquipment(){try{const x=JSON.parse(localStorage.getItem(EQUIPMENT_KEY));return Array.isArray(x)?x:seedEquipment.map(x=>[...x])}catch(e){return seedEquipment.map(x=>[...x])}}
+function removeLegacyDemoData(){
+ try{const x=JSON.parse(localStorage.getItem(STORAGE_KEY));if(Array.isArray(x)&&x.length===5&&['Marcos Oliveira','Ana Paula Santos','Carlos Mendes','João Ribeiro','Fernanda Costa'].every((n,i)=>x[i]&&x[i][1]===n)){localStorage.removeItem(STORAGE_KEY);leads=[]}}catch(e){}
+ try{const x=JSON.parse(localStorage.getItem(EQUIPMENT_KEY));if(Array.isArray(x)&&x.length===3&&['320','L90H','STC250T5'].every((n,i)=>x[i]&&x[i][2]===n)){localStorage.removeItem(EQUIPMENT_KEY);equipments=[]}}catch(e){}
+}
+
+function loadEquipment(){try{const x=JSON.parse(localStorage.getItem(EQUIPMENT_KEY));return Array.isArray(x)?x:[]}catch(e){return []}}
 function persistEquipment(){localStorage.setItem(EQUIPMENT_KEY,JSON.stringify(equipments))}
 function brl(v){const n=Number(v);return Number.isFinite(n)?n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}):''}
 function renderEquipment(a=equipments){const body=document.querySelector('#equipmentRows');if(!body)return;body.innerHTML=a.map(x=>{const i=equipments.indexOf(x);return `<tr><td>${esc(x[0])}</td><td>${esc(x[1])}</td><td>${esc(x[2])}</td><td>${esc(x[3])}</td><td>${esc(x[4])} h</td><td>${brl(x[5])}</td><td>${esc(x[6])} L/h</td><td>${brl(x[7])}/h</td><td>${esc(x[8])}%</td><td>${esc(x[9])}</td><td class="actions"><button type="button" data-eq-edit="${i}" title="Editar">✎</button> <button type="button" data-eq-delete="${i}" title="Excluir">▣</button></td></tr>`}).join('')}
@@ -72,7 +79,7 @@ const eqd=document.querySelector('#equipmentDialog'),eqf=document.querySelector(
 function openEquipment(i=null){editingEquipment=i;document.querySelector('#equipmentDialogTitle').textContent=i===null?'Novo Equipamento':'Editar Equipamento';if(i===null)eqf.reset();else{const x=equipments[i];['eqCategory','eqMaker','eqModel','eqYear','eqHours','eqValue','eqConsumption','eqMaintenance','eqAvailability','eqStatus'].forEach((id,n)=>document.querySelector('#'+id).value=x[n])}eqd.showModal()}
 document.querySelector('#newEquipment').onclick=()=>openEquipment();
 document.querySelector('#cancelEquipment').onclick=()=>eqd.close();
-eqf.addEventListener('submit',e=>{e.preventDefault();const ids=['eqCategory','eqMaker','eqModel','eqYear','eqHours','eqValue','eqConsumption','eqMaintenance','eqAvailability','eqStatus'];const row=ids.map(id=>document.querySelector('#'+id).value.trim());if(!row[1]||!row[2])return;if(editingEquipment===null)equipments.unshift(row);else equipments[editingEquipment]=row;persistEquipment();renderEquipment();populateComparators();analysisOptions();eqd.close();eqf.reset()});
+eqf.addEventListener('submit',e=>{e.preventDefault();const ids=['eqCategory','eqMaker','eqModel','eqYear','eqHours','eqValue','eqConsumption','eqMaintenance','eqAvailability','eqStatus'];const row=ids.map(id=>document.querySelector('#'+id).value.trim());if(!row[1]||!row[2])return;if(editingEquipment===null)equipments.unshift(row);else equipments[editingEquipment]=row;persistEquipment();removeLegacyDemoData();render();renderEquipment();populateComparators();analysisOptions();eqd.close();eqf.reset()});
 document.addEventListener('click',e=>{const ed=e.target.closest('[data-eq-edit]'),del=e.target.closest('[data-eq-delete]');if(ed)openEquipment(Number(ed.dataset.eqEdit));if(del){const i=Number(del.dataset.eqDelete);if(confirm(`Excluir o equipamento ${equipments[i][1]} ${equipments[i][2]}?`)){equipments.splice(i,1);persistEquipment();renderEquipment();populateComparators();analysisOptions()}}});
 document.querySelector('#equipmentSearch').oninput=e=>{const q=e.target.value.toLowerCase();renderEquipment(equipments.filter(x=>x.join(' ').toLowerCase().includes(q)))};
 renderEquipment();
@@ -143,7 +150,7 @@ analysisOptions();
 
 // MAQON - Propostas Comerciais
 const PROPOSAL_KEY='maqon_propostas_v1';
-let proposals=loadProposals(),editingProposal=null;
+let proposals=loadProposals(),editingProposal=null;setTimeout(()=>{try{renderLiveSummary()}catch(e){}},0);
 function loadProposals(){try{const x=JSON.parse(localStorage.getItem(PROPOSAL_KEY));return Array.isArray(x)?x:[]}catch(e){return []}}
 function persistProposals(){localStorage.setItem(PROPOSAL_KEY,JSON.stringify(proposals))}
 function proposalNumber(i){return 'PROP-'+String(i+1).padStart(4,'0')}
@@ -192,3 +199,15 @@ document.addEventListener('click',e=>{const ed=e.target.closest('[data-pr-edit]'
 document.querySelector('#proposalSearch').oninput=e=>{const q=e.target.value.toLowerCase();renderProposals(proposals.filter(p=>Object.values(p).join(' ').toLowerCase().includes(q)))};
 const qp=[...document.querySelectorAll('.quick button')].find(b=>b.textContent.includes('Gerar Proposta'));if(qp)qp.onclick=()=>{go('propostas');openProposal()};
 proposalOptions();renderProposals();
+
+
+// MAQON V1.0 Comercial — canais configuráveis, relatórios e navegação final
+const CHANNEL_KEY='maqon_channels_v1';
+const channelDefaults={email:'maqonapp@gmail.com',whatsapp:'5598992202920',instagram:'',facebook:'',linkedin:'',hubspot:'',sheets:''};
+function loadChannels(){try{return {...channelDefaults,...(JSON.parse(localStorage.getItem(CHANNEL_KEY))||{})}}catch(e){return {...channelDefaults}}}
+function safeUrl(v){v=String(v||'').trim();return /^https:\/\//i.test(v)?v:''}
+function renderChannels(){const c=loadChannels(),box=document.querySelector('#integrationCards');if(!box)return;const items=[['WhatsApp Business',c.whatsapp?'https://wa.me/'+String(c.whatsapp).replace(/\D/g,''):'','Atendimento comercial'],['Instagram',safeUrl(c.instagram),'Perfil oficial'],['Facebook',safeUrl(c.facebook),'Página oficial'],['LinkedIn',safeUrl(c.linkedin),'Página profissional'],['E-mail',c.email?'mailto:'+encodeURIComponent(c.email):'','Contato: '+(c.email||'não configurado')],['HubSpot',safeUrl(c.hubspot),'CRM / automação'],['Google Sheets',safeUrl(c.sheets),'Planilhas e bases externas']];box.innerHTML=items.map(([n,u,d])=>`<div class="integration-card"><b>${esc(n)}</b><small>${esc(d)}</small>${u?`<a class="channel-btn" href="${esc(u)}" target="_blank" rel="noopener">Abrir canal →</a>`:'<span class="channel-btn disabled">Configurar</span>'}</div>`).join('')}
+function loadChannelForm(){const c=loadChannels(),map={cfgEmail:'email',cfgWhatsapp:'whatsapp',cfgInstagram:'instagram',cfgFacebook:'facebook',cfgLinkedin:'linkedin',cfgHubspot:'hubspot',cfgSheets:'sheets'};Object.entries(map).forEach(([id,k])=>{const el=document.getElementById(id);if(el)el.value=c[k]||''})}
+const channelForm=document.querySelector('#channelForm');if(channelForm){loadChannelForm();channelForm.addEventListener('submit',e=>{e.preventDefault();const c={email:cfgEmail.value.trim(),whatsapp:cfgWhatsapp.value.replace(/\D/g,''),instagram:cfgInstagram.value.trim(),facebook:cfgFacebook.value.trim(),linkedin:cfgLinkedin.value.trim(),hubspot:cfgHubspot.value.trim(),sheets:cfgSheets.value.trim()};localStorage.setItem(CHANNEL_KEY,JSON.stringify(c));renderChannels();alert('Canais salvos nesta instalação da MAQON.');})}
+function renderReports(){const crm=loadCRMLeads(),base=crm.length?crm:leads,total=base.length,clients=crm.length?crm.filter(x=>x.status==='Fechado').length:leads.filter(x=>x[5]==='Cliente').length,pipe=(typeof proposals!=='undefined'?proposals:[]).reduce((a,p)=>a+(Number(p.value)||0),0);const a=document.querySelector('#reportLeads'),b=document.querySelector('#reportClients'),c=document.querySelector('#reportPipeline');if(a)a.textContent=total;if(b)b.textContent=clients;if(c)c.textContent=brl(pipe)}
+const printReport=document.querySelector('#printReport');if(printReport)printReport.onclick=()=>window.print();renderChannels();renderReports();
