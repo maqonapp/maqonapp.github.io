@@ -208,7 +208,7 @@ const qp=[...document.querySelectorAll('.quick button')].find(b=>b.textContent.i
 proposalOptions();renderProposals();
 
 
-/* MAQON V1.2 — Central de Integrações Sociais */
+/* MAQON V1.3 — Integrações Sociais + camada segura Meta API */
 const SOCIAL_KEY='maqon_social_integrations_v1';
 const SOCIAL_DEFAULTS={
  whatsapp:'5598992202920',
@@ -216,6 +216,8 @@ const SOCIAL_DEFAULTS={
  facebook:'',
  linkedin:'',
  hubspot:'',
+ metaApiBase:'',
+ metaApiKey:'',
  whatsappMessage:'Olá! Vim pela MAQON e gostaria de atendimento.'
 };
 function loadSocialSettings(){
@@ -225,14 +227,53 @@ function saveSocialSettings(data){localStorage.setItem(SOCIAL_KEY,JSON.stringify
 function onlyDigits(v=''){return String(v).replace(/\D/g,'')}
 function safeUrl(v=''){
  const x=String(v).trim(); if(!x)return '';
- try{const u=new URL(x);return ['http:','https:'].includes(u.protocol)?u.href:''}catch(e){return ''}
+ try{const u=new URL(x);return ['http:','https:'].includes(u.protocol)?u.href.replace(/\/$/,''):''}catch(e){return ''}
 }
 function setSocialLink(id,url,labelId,emptyText,statusId){
  const a=document.querySelector('#'+id),label=document.querySelector('#'+labelId),status=statusId?document.querySelector('#'+statusId):null;
  const clean=safeUrl(url);
  if(a){if(clean){a.href=clean;a.classList.remove('disabled-link')}else{a.removeAttribute('href');a.classList.add('disabled-link')}}
  if(label)label.textContent=clean?clean.replace(/^https?:\/\//,'').replace(/\/$/,''):emptyText;
- if(status){status.textContent=clean?'● Configurado':'Configurar perfil';status.classList.toggle('connected',!!clean)}
+ if(status){status.textContent=clean?'● Perfil configurado':'Configurar perfil';status.classList.toggle('connected',!!clean)}
+}
+function metaBase(){return safeUrl(loadSocialSettings().metaApiBase)}
+function setMetaMessage(message,type=''){
+ const el=document.querySelector('#metaApiMessage');if(!el)return;el.textContent=message;el.className='meta-api-message'+(type?' '+type:'');
+}
+function setMetaStatus(message,connected=false){
+ const el=document.querySelector('#metaApiStatus');if(!el)return;el.textContent=message;el.classList.toggle('connected',connected);
+}
+async function metaFetch(path,options={}){
+ const base=metaBase();if(!base)throw new Error('Configure a URL do backend seguro MAQON.');
+ const key=loadSocialSettings().metaApiKey||'';
+ const headers={'Accept':'application/json',...(options.body?{'Content-Type':'application/json'}:{}),...(key?{'Authorization':'Bearer '+key}:{}),...(options.headers||{})};
+ const r=await fetch(base+path,{...options,headers,credentials:'omit'});
+ let data={};try{data=await r.json()}catch(e){}
+ if(!r.ok)throw new Error(data.error||data.message||`Falha HTTP ${r.status}`);
+ return data;
+}
+function renderMetaPages(pages=[],selectedPageId=''){
+ const sel=document.querySelector('#metaPageSelect');if(!sel)return;
+ if(!pages.length){sel.innerHTML='<option value="">Nenhuma Página disponível</option>';return}
+ sel.innerHTML=pages.map(p=>`<option value="${esc(p.id)}" ${String(p.id)===String(selectedPageId)?'selected':''}>${esc(p.name||p.id)}${p.instagram?.username?' — @'+esc(p.instagram.username):''}</option>`).join('');
+}
+async function refreshMetaStatus(showErrors=false){
+ const base=metaBase();
+ if(!base){setMetaStatus('Backend não configurado',false);renderMetaPages([]);return}
+ try{
+  setMetaStatus('Verificando...',false);
+  const s=await metaFetch('/api/meta/status');
+  const connected=!!s.connected;
+  setMetaStatus(connected?'● Meta conectada':'Backend online • autorização pendente',connected);
+  renderMetaPages(s.pages||[],s.selected_page?.id||'');
+  if(connected){
+   const fb=document.querySelector('#fbStatus'),ig=document.querySelector('#igStatus');
+   if(fb){fb.textContent=`● API: ${s.selected_page?.name||'Meta conectada'}`;fb.classList.add('connected')}
+   if(ig&&s.selected_page?.instagram?.username){ig.textContent=`● API: @${s.selected_page.instagram.username}`;ig.classList.add('connected')}
+   setMetaMessage(s.webhook_subscribed===false?'Conta conectada. A inscrição de webhook ainda precisa ser concluída.':'OAuth ativo e backend seguro respondendo.','ok');
+  }else setMetaMessage('Backend encontrado. Clique em “Conectar Meta” para autorizar Facebook/Instagram.');
+  return s;
+ }catch(err){setMetaStatus('● Backend indisponível',false);if(showErrors)setMetaMessage(err.message,'error');}
 }
 function renderSocialIntegrations(){
  const cfg=loadSocialSettings();
@@ -240,13 +281,13 @@ function renderSocialIntegrations(){
  const waText=encodeURIComponent(cfg.whatsappMessage||SOCIAL_DEFAULTS.whatsappMessage);
  const waOpen=document.querySelector('#waOpen');if(waOpen)waOpen.href=`https://wa.me/${wa}?text=${waText}`;
  const waLabel=document.querySelector('#waLabel');if(waLabel)waLabel.textContent=wa===SOCIAL_DEFAULTS.whatsapp?'(98) 99220-2920':`+${wa}`;
- const fields={socialWhatsapp:cfg.whatsapp,socialInstagram:cfg.instagram,socialFacebook:cfg.facebook,socialLinkedin:cfg.linkedin,socialHubspot:cfg.hubspot,socialWhatsappMessage:cfg.whatsappMessage};
+ const fields={socialWhatsapp:cfg.whatsapp,socialInstagram:cfg.instagram,socialFacebook:cfg.facebook,socialLinkedin:cfg.linkedin,socialHubspot:cfg.hubspot,socialMetaApiBase:cfg.metaApiBase,socialMetaApiKey:cfg.metaApiKey,socialWhatsappMessage:cfg.whatsappMessage};
  Object.entries(fields).forEach(([id,v])=>{const el=document.querySelector('#'+id);if(el)el.value=v||''});
  setSocialLink('igOpen',cfg.instagram,'igLabel','Perfil ainda não configurado','igStatus');
  setSocialLink('fbOpen',cfg.facebook,'fbLabel','Página ainda não configurada','fbStatus');
  setSocialLink('liOpen',cfg.linkedin,'liLabel','Página/perfil ainda não configurado','liStatus');
  setSocialLink('hsOpen',cfg.hubspot,'hsLabel','Portal ainda não configurado','hsStatus');
- updateSocialLeadCounts();
+ updateSocialLeadCounts();refreshMetaStatus(false);
 }
 function updateSocialLeadCounts(){
  const crm=loadCRMLeads();
@@ -262,15 +303,54 @@ if(saveSocialBtn)saveSocialBtn.addEventListener('click',()=>{
   facebook:safeUrl(document.querySelector('#socialFacebook')?.value),
   linkedin:safeUrl(document.querySelector('#socialLinkedin')?.value),
   hubspot:safeUrl(document.querySelector('#socialHubspot')?.value),
+  metaApiBase:safeUrl(document.querySelector('#socialMetaApiBase')?.value),
+  metaApiKey:(document.querySelector('#socialMetaApiKey')?.value||'').trim(),
   whatsappMessage:(document.querySelector('#socialWhatsappMessage')?.value||SOCIAL_DEFAULTS.whatsappMessage).trim()
  };
  saveSocialSettings(data);renderSocialIntegrations();
  const original=saveSocialBtn.textContent;saveSocialBtn.textContent='✓ Integrações salvas';setTimeout(()=>saveSocialBtn.textContent=original,1800);
 });
 document.addEventListener('click',e=>{
- const b=e.target.closest('[data-social-lead]');if(!b)return;
- const origin=b.dataset.socialLead||'Manual';openLead();
- const originEl=document.querySelector('#leadOrigin');if(originEl&&[...originEl.options].some(o=>o.value===origin))originEl.value=origin;
- const notes=document.querySelector('#leadNotes');if(notes)notes.value=`Lead originado pelo canal ${origin}.`;
+ const b=e.target.closest('[data-social-lead]');if(b){
+  const origin=b.dataset.socialLead||'Manual';openLead();
+  const originEl=document.querySelector('#leadOrigin');if(originEl&&[...originEl.options].some(o=>o.value===origin))originEl.value=origin;
+  const notes=document.querySelector('#leadNotes');if(notes)notes.value=`Lead originado pelo canal ${origin}.`;
+  return;
+ }
+ if(e.target.closest('[data-meta-connect]'))startMetaConnect();
 });
+async function startMetaConnect(){
+ const base=metaBase();if(!base){go('integracoes');document.querySelector('#socialMetaApiBase')?.focus();setMetaMessage('Informe a URL pública HTTPS do backend MAQON e clique em “Salvar integrações”.','error');return}
+ try{const return_to=location.href.split('?')[0].split('#')[0]+'?meta=connected';setMetaMessage('Preparando autorização segura da Meta...');const r=await metaFetch('/api/meta/connect-url',{method:'POST',body:JSON.stringify({return_to})});if(!r.url)throw new Error('O backend não retornou a URL de autorização.');location.href=r.url}catch(err){setMetaMessage(err.message,'error')}
+}
+function fieldMap(item){
+ const out={};(item.field_data||[]).forEach(f=>{const key=String(f.name||'').toLowerCase();const val=Array.isArray(f.values)?f.values.join(', '):String(f.values||'');out[key]=val});return out;
+}
+function pickField(m,names){for(const n of names){if(m[n])return m[n]}return ''}
+function importMetaLeads(items=[]){
+ let db;try{db=JSON.parse(localStorage.getItem('maqon_automation_v1'))||{}}catch(e){db={}};
+ db.leads=Array.isArray(db.leads)?db.leads:[];db.events=Array.isArray(db.events)?db.events:[];
+ const existing=new Set(db.leads.map(x=>String(x.metaLeadId||'')));let added=0;
+ items.forEach(item=>{
+  if(!item.id||existing.has(String(item.id)))return;
+  const m=fieldMap(item),full=pickField(m,['full_name','nome_completo','name']),first=pickField(m,['first_name','primeiro_nome']),last=pickField(m,['last_name','sobrenome']);
+  const nome=full||[first,last].filter(Boolean).join(' ')||'Lead Meta';
+  const extras=Object.entries(m).filter(([k])=>!['full_name','nome_completo','name','first_name','primeiro_nome','last_name','sobrenome','email','phone_number','phone','telefone','company_name','company','empresa','city','cidade','state','estado'].includes(k)).map(([k,v])=>`${k}: ${v}`).join(' | ');
+  const now=new Date().toISOString();
+  db.leads.unshift({id:'META-'+String(item.id),metaLeadId:String(item.id),nome,empresa:pickField(m,['company_name','company','empresa']),whatsapp:pickField(m,['phone_number','phone','telefone']),email:pickField(m,['email']),cidade:pickField(m,['city','cidade']),estado:pickField(m,['state','estado']),tipoEquipamento:'',marcaModelo:'',compraLocacao:'Consultoria',orcamento:'',objetivo:'Lead recebido automaticamente por formulário Meta Lead Ads.',observacoes:[`Formulário Meta: ${item.form_name||item.form_id||'—'}`,extras].filter(Boolean).join(' | '),responsavel:'Equipe Comercial',origem:'Meta Lead Ads',status:'Novo Lead',atualizadoEm:item.created_time||now});
+  db.events.unshift({tipo:'lead_meta_importado',leadId:'META-'+String(item.id),origem:'Meta Lead Ads',quando:now});existing.add(String(item.id));added++;
+ });
+ localStorage.setItem('maqon_automation_v1',JSON.stringify(db));return added;
+}
+const metaConnectBtn=document.querySelector('#metaConnectBtn');if(metaConnectBtn)metaConnectBtn.onclick=startMetaConnect;
+const metaTestBtn=document.querySelector('#metaTestBtn');if(metaTestBtn)metaTestBtn.onclick=()=>refreshMetaStatus(true);
+const metaSavePageBtn=document.querySelector('#metaSavePageBtn');if(metaSavePageBtn)metaSavePageBtn.onclick=async()=>{
+ try{const page_id=document.querySelector('#metaPageSelect')?.value;if(!page_id)throw new Error('Selecione uma Página Meta.');setMetaMessage('Configurando Página e webhook...');const r=await metaFetch('/api/meta/select-page',{method:'POST',body:JSON.stringify({page_id})});setMetaMessage(r.webhook_subscribed?'Página selecionada e webhook leadgen ativado.':'Página selecionada. Verifique as permissões do webhook.','ok');await refreshMetaStatus(true)}catch(err){setMetaMessage(err.message,'error')}
+};
+const metaSyncBtn=document.querySelector('#metaSyncBtn');if(metaSyncBtn)metaSyncBtn.onclick=async()=>{
+ try{setMetaMessage('Buscando Leads Ads na Meta...');await metaFetch('/api/meta/sync',{method:'POST',body:'{}'});const r=await metaFetch('/api/meta/leads');const added=importMetaLeads(r.leads||[]);render();setMetaMessage(`Sincronização concluída: ${added} novo(s) lead(s) importado(s) para o CRM MAQON.`, 'ok')}catch(err){setMetaMessage(err.message,'error')}
+};
+if(new URLSearchParams(location.search).get('meta')==='connected'){
+ setTimeout(()=>{go('integracoes');history.replaceState({},'',location.pathname+location.hash);refreshMetaStatus(true)},50);
+}
 renderSocialIntegrations();
