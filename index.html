@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MAQON | Painel de Controle V1.0</title>
+<title>MAQON | Painel de Controle V1.2 Social</title>
 <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
@@ -29,6 +29,7 @@
 </aside>
 
 <main>
+<div class="platform-actions"><button id="platformBack" type="button">← Voltar</button><button id="platformHome" type="button">⌂ Visão Geral</button></div>
 <section id="dashboard" class="view active">
   <div class="toolbar">
     <label>▣ Período<select><option>Últimos 30 dias</option></select></label>
@@ -50,11 +51,11 @@
   <div class="grid">
     <article class="panel"><h2>Funil Comercial</h2>
       <div class="funnel">
-        <div><span>♟ Leads</span><b>0</b><small>0%</small></div>
-        <div><span>◉ Em Atendimento</span><b>0</b><small>0%</small></div>
-        <div><span>▤ Propostas</span><b>0</b><small>0%</small></div>
-        <div><span>◆ Negociação</span><b>0</b><small>0%</small></div>
-        <div><span>✓ Clientes</span><b>0</b><small>0%</small></div>
+        <div><span>♟ Leads</span><b>248</b><small>100%</small></div>
+        <div><span>◉ Em Atendimento</span><b>86</b><small>35%</small></div>
+        <div><span>▤ Propostas</span><b>46</b><small>19%</small></div>
+        <div><span>◆ Negociação</span><b>32</b><small>13%</small></div>
+        <div><span>✓ Clientes</span><b>27</b><small>11%</small></div>
       </div>
     </article>
     <article class="panel evolution"><h2>Evolução de Leads</h2><div id="evolutionEmpty" style="padding:42px 16px;text-align:center;opacity:.72">O histórico será formado automaticamente com os novos registros.</div></article>
@@ -89,15 +90,43 @@
 <section id="equipamentos" class="view"><h1>Equipamentos</h1><article class="panel"><div style="display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap"><input id="equipmentSearch" placeholder="Pesquisar equipamento..." style="min-width:280px"><button class="primary" id="newEquipment">＋ Novo Equipamento</button></div><table><thead><tr><th>Categoria</th><th>Fabricante</th><th>Modelo</th><th>Ano</th><th>Horímetro</th><th>Valor</th><th>Consumo</th><th>Manutenção</th><th>Disponibilidade</th><th>Situação</th><th>Ações</th></tr></thead><tbody id="equipmentRows"></tbody></table></article></section>
 <section id="comparativos" class="view"><h1>Comparativos</h1><article class="panel"><h2>Comparativo de Máquinas</h2><p>Selecione até 3 equipamentos cadastrados para comparar lado a lado.</p><div style="display:grid;grid-template-columns:repeat(3,minmax(220px,1fr));gap:12px;margin:18px 0"><label>Máquina 1<select id="compare1"></select></label><label>Máquina 2<select id="compare2"></select></label><label>Máquina 3<select id="compare3"></select></label></div><div style="overflow:auto"><table><thead><tr><th>Indicador</th><th id="compareHead1">Máquina 1</th><th id="compareHead2">Máquina 2</th><th id="compareHead3">Máquina 3</th></tr></thead><tbody id="compareRows"></tbody></table></div><p id="compareSummary" style="margin-top:16px"></p></article></section>
 <section id="analises" class="view"><h1>Análises Técnicas</h1><article class="panel"><h2>MAQON Engine — Análise de Equipamento</h2><p>Selecione um equipamento cadastrado para gerar os indicadores técnicos automaticamente.</p><div style="display:flex;gap:14px;align-items:end;flex-wrap:wrap;margin:18px 0"><label style="min-width:320px;flex:1">Equipamento<select id="analysisEquipment"></select></label><button class="primary" id="runAnalysis" type="button">⌁ Gerar Análise</button></div><div class="cards compact"><article><span>Custo Operacional / h</span><strong id="analysisCost">—</strong></article><article><span>Disponibilidade</span><strong id="analysisAvailability">—</strong></article><article><span>Score MAQON</span><strong id="analysisScore">—</strong></article></div><div style="overflow:auto;margin-top:18px"><table><tbody id="analysisRows"></tbody></table></div><p id="analysisSummary" style="margin-top:16px"></p></article></section>
-<section id="manutencao" class="view"><h1>Manutenção</h1><article class="panel"><h2>Planejamento de Manutenção</h2><p>Preventiva, corretiva e preditiva com histórico e alertas.</p></article></section>
-<section id="integracoes" class="view"><h1>Integrações</h1><article class="panel"><h2>Central de Integrações</h2><p>Conecte os canais comerciais da MAQON conforme as contas forem ativadas.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:18px"><div class="panel"><b>WhatsApp Business</b><p>Pronto para configuração</p></div><div class="panel"><b>Instagram / Facebook</b><p>Pronto para configuração Meta</p></div><div class="panel"><b>LinkedIn</b><p>Pronto para configuração</p></div><div class="panel"><b>E-mail</b><p>maqonapp@gmail.com</p></div><div class="panel"><b>HubSpot</b><p>Pronto para configuração</p></div><div class="panel"><b>Google Sheets</b><p>Pronto para configuração</p></div></div></article></section>
+<section id="manutencao" class="view"><h1>Manutenção</h1><article class="panel"><h2>Planejamento de Manutenção</h2><p>Controle preventivo, corretivo e preditivo vinculado aos equipamentos cadastrados.</p><div class="modulecards commercial-grid"><article>🛠<b>Preventiva</b><span>Planeje revisões e inspeções periódicas.</span></article><article>⚙<b>Corretiva</b><span>Registre intervenções e pendências.</span></article><article>📈<b>Preditiva</b><span>Acompanhe disponibilidade e indicadores.</span></article><article>⚠<b>Alertas</b><span><button class="primary module-action" onclick="location.href='maqon-alertas.html'">Abrir Central de Alertas</button></span></article></div></article></section>
+<section id="integracoes" class="view">
+  <h1>Integrações</h1>
+  <article class="panel social-hub">
+    <div class="social-head"><div><h2>Central de Integrações Sociais</h2><p>Conecte os canais comerciais da MAQON, abra atendimentos e registre a origem de cada lead no funil.</p></div><span class="social-live">● Central ativa</span></div>
+    <div class="integration-grid social-cards">
+      <div class="panel social-card" data-channel="WhatsApp"><div class="social-icon">WA</div><b>WhatsApp Business</b><p id="waLabel">(98) 99220-2920</p><span class="integration-status connected">● Ativo por link direto</span><div class="integration-actions"><a id="waOpen" class="primary integration-link" target="_blank" rel="noopener">Abrir WhatsApp</a><button type="button" data-social-lead="WhatsApp">＋ Lead</button></div></div>
+      <div class="panel social-card" data-channel="Instagram"><div class="social-icon">IG</div><b>Instagram</b><p id="igLabel">Perfil ainda não configurado</p><span id="igStatus" class="integration-status">Configurar perfil</span><div class="integration-actions"><a id="igOpen" class="primary integration-link disabled-link" target="_blank" rel="noopener">Abrir Instagram</a><button type="button" data-social-lead="Instagram">＋ Lead</button></div></div>
+      <div class="panel social-card" data-channel="Facebook"><div class="social-icon">FB</div><b>Facebook</b><p id="fbLabel">Página ainda não configurada</p><span id="fbStatus" class="integration-status">Configurar página</span><div class="integration-actions"><a id="fbOpen" class="primary integration-link disabled-link" target="_blank" rel="noopener">Abrir Facebook</a><button type="button" data-social-lead="Facebook">＋ Lead</button></div></div>
+      <div class="panel social-card" data-channel="LinkedIn"><div class="social-icon">IN</div><b>LinkedIn</b><p id="liLabel">Página/perfil ainda não configurado</p><span id="liStatus" class="integration-status">Configurar LinkedIn</span><div class="integration-actions"><a id="liOpen" class="primary integration-link disabled-link" target="_blank" rel="noopener">Abrir LinkedIn</a><button type="button" data-social-lead="LinkedIn">＋ Lead</button></div></div>
+      <div class="panel social-card" data-channel="Email"><div class="social-icon">@</div><b>E-mail MAQON</b><p>maqonapp@gmail.com</p><span class="integration-status connected">● Ativo</span><div class="integration-actions"><a class="primary integration-link" href="mailto:maqonapp@gmail.com">Abrir e-mail</a><button type="button" data-social-lead="E-mail">＋ Lead</button></div></div>
+      <div class="panel social-card" data-channel="HubSpot"><div class="social-icon">HS</div><b>HubSpot</b><p id="hsLabel">Portal ainda não configurado</p><span id="hsStatus" class="integration-status">Configurar portal</span><div class="integration-actions"><a id="hsOpen" class="primary integration-link disabled-link" target="_blank" rel="noopener">Abrir HubSpot</a><button type="button" data-social-lead="HubSpot">＋ Lead</button></div></div>
+    </div>
+  </article>
+
+  <article class="panel social-settings">
+    <div class="social-head"><div><h2>Configuração dos canais</h2><p>Salve os endereços oficiais uma única vez. Os dados ficam no navegador e podem ser alterados quando necessário.</p></div><button type="button" class="primary" id="saveSocialSettings">Salvar integrações</button></div>
+    <div class="social-form-grid">
+      <label>WhatsApp Business<input id="socialWhatsapp" inputmode="tel" placeholder="5598992202920"></label>
+      <label>Instagram<input id="socialInstagram" type="url" placeholder="https://instagram.com/seu_perfil"></label>
+      <label>Facebook<input id="socialFacebook" type="url" placeholder="https://facebook.com/sua_pagina"></label>
+      <label>LinkedIn<input id="socialLinkedin" type="url" placeholder="https://linkedin.com/company/... ou /in/..."></label>
+      <label>HubSpot<input id="socialHubspot" type="url" placeholder="https://app.hubspot.com/..."></label>
+      <label>Mensagem inicial do WhatsApp<input id="socialWhatsappMessage" placeholder="Olá! Vim pela MAQON e gostaria de atendimento."></label>
+    </div>
+    <div class="social-note"><b>Automação oficial por API:</b> a central acima já funciona para acesso direto e rastreamento de origem. Sincronização automática de mensagens/leads exige autorização OAuth/API de Meta, LinkedIn e HubSpot e será ativada sem armazenar senhas no código.</div>
+  </article>
+
+  <article class="panel social-origin-panel"><h2>Leads por canal social</h2><div class="social-origin-grid"><div><span>WhatsApp</span><strong id="socialCountWhatsapp">0</strong></div><div><span>Instagram</span><strong id="socialCountInstagram">0</strong></div><div><span>Facebook</span><strong id="socialCountFacebook">0</strong></div><div><span>LinkedIn</span><strong id="socialCountLinkedin">0</strong></div><div><span>E-mail</span><strong id="socialCountEmail">0</strong></div><div><span>HubSpot</span><strong id="socialCountHubspot">0</strong></div></div></article>
+</section>
 <section id="propostas" class="view"><h1>Propostas</h1><article class="panel"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><h2>Gestão de Propostas Comerciais</h2><p><strong id="proposalCount">0</strong> propostas cadastradas • <strong id="proposalSentCount">0</strong> enviadas</p></div><button class="primary" id="newProposal">＋ Nova Proposta</button></div><input id="proposalSearch" placeholder="Pesquisar proposta..." style="min-width:280px;margin:14px 0"><div style="overflow:auto"><table><thead><tr><th>#</th><th>Cliente</th><th>Empresa</th><th>Equipamento</th><th>Modalidade</th><th>Valor</th><th>Validade</th><th>Status</th><th>Ações</th></tr></thead><tbody id="proposalRows"></tbody></table></div></article></section>
-<section id="financeiro" class="view"><h1>Financeiro</h1><article class="panel"><h2>Pipeline comercial</h2><p>Valor total das propostas cadastradas</p><strong id="financePipeline" style="font-size:32px">R$ 0,00</strong></article></section>
-<section id="relatorios" class="view"><h1>Relatórios</h1><article class="panel">Relatórios executivos, técnicos e comerciais.</article></section>
-<section id="config" class="view"><h1>Configurações</h1><article class="panel"><h2>Dados da plataforma</h2><p><b>Produto:</b> MAQON — Consultoria em Equipamentos Pesados</p><p><b>E-mail:</b> maqonapp@gmail.com</p><p><b>Versão:</b> V1.0 Comercial</p><p>As credenciais das integrações externas não são armazenadas nesta página.</p></article></section>
+<section id="financeiro" class="view"><h1>Financeiro</h1><article class="panel"><h2>Pipeline Comercial</h2><p>Valores calculados a partir das propostas cadastradas na plataforma.</p><div class="cards compact"><article><span>Valor total</span><strong id="financePipeline">R$ 0,00</strong></article><article><span>Propostas</span><strong id="financeProposalCount">0</strong></article><article><span>Aprovadas</span><strong id="financeApprovedCount">0</strong></article></div></article></section>
+<section id="relatorios" class="view"><h1>Relatórios</h1><article class="panel"><h2>Central de Relatórios</h2><p>Acesse os dados consolidados da operação e utilize a impressão do navegador para gerar PDF quando necessário.</p><div class="modulecards commercial-grid"><article>▥<b>Executivo</b><span>Indicadores gerais e funil comercial.</span><button class="primary module-action" data-report-view="dashboard">Abrir</button></article><article>⌁<b>Técnico</b><span>Análises de equipamentos cadastrados.</span><button class="primary module-action" data-report-view="analises">Abrir</button></article><article>▤<b>Comercial</b><span>Propostas e pipeline de vendas.</span><button class="primary module-action" data-report-view="propostas">Abrir</button></article><article>🖨<b>Exportar</b><span>Imprima a tela atual ou salve em PDF.</span><button class="primary module-action" onclick="window.print()">Imprimir / PDF</button></article></div></article></section>
+<section id="config" class="view"><h1>Configurações</h1><article class="panel"><h2>Dados da plataforma</h2><p><b>Produto:</b> MAQON — Consultoria em Equipamentos Pesados</p><p><b>Contato oficial:</b> maqonapp@gmail.com</p><p><b>Versão:</b> V1.2 Comercial + Integrações Sociais</p><p><b>Armazenamento atual:</b> dados operacionais salvos no navegador deste dispositivo.</p><p><b>Integrações:</b> credenciais externas não ficam expostas nesta página.</p><hr style="border-color:#31434b"><p>Antes da venda em escala/multiusuário, a próxima evolução técnica é autenticação e banco de dados em nuvem.</p></article></section>
 </main>
 
-<footer><b>MAQON</b><span class="foot-left">CONSULTORIA EM EQUIPAMENTOS PESADOS　|　✉ maqonapp@gmail.com　|　PLANEJAMENTO　|　ANÁLISE　|　CUSTO-BENEFÍCIO　|　DISPONIBILIDADE　|　PRODUTIVIDADE　|　SEGURANÇA</span><span class="foot-right">Máquinas em movimento. Resultados para você.　 <strong>V1.0</strong>　● Online</span></footer>
+<footer><b>MAQON</b><span class="foot-left">CONSULTORIA EM EQUIPAMENTOS PESADOS　|　✉ maqonapp@gmail.com　|　PLANEJAMENTO　|　ANÁLISE　|　CUSTO-BENEFÍCIO　|　DISPONIBILIDADE　|　PRODUTIVIDADE　|　SEGURANÇA</span><span class="foot-right">Máquinas em movimento. Resultados para você.　 <strong>V1.2</strong>　● Online</span></footer>
 
 <dialog id="leadDialog" class="lead-dialog"><form id="leadForm"><h2 id="leadDialogTitle">Novo Lead</h2>
 <div class="lead-grid">
@@ -111,7 +140,7 @@
 <select id="leadStatus"><option>Novo Lead</option><option>Em Atendimento</option><option>Proposta Enviada</option><option>Negociação</option><option>Cliente</option></select>
 <select id="leadPhase"><option>Qualificação</option><option>Diagnóstico</option><option>Proposta</option><option>Negociação</option><option>Fechado</option></select>
 <select id="leadOwner"><option>Renan</option><option>Equipe Comercial</option><option>Não definido</option></select>
-<select id="leadOrigin"><option>Manual</option><option>Diagnóstico MAQON</option><option>Site</option><option>WhatsApp</option><option>LinkedIn</option><option>Indicação</option><option>Outro</option></select>
+<select id="leadOrigin"><option>Manual</option><option>Diagnóstico MAQON</option><option>Site</option><option>WhatsApp</option><option>Instagram</option><option>Facebook</option><option>LinkedIn</option><option>E-mail</option><option>HubSpot</option><option>Indicação</option><option>Outro</option></select>
 <textarea id="leadNeed" rows="3" placeholder="Necessidade do cliente / aplicação"></textarea>
 <textarea id="leadNotes" rows="3" placeholder="Observações comerciais"></textarea>
 </div><div class="lead-actions"><button type="button" id="cancelLead">Cancelar</button><button class="primary" id="save" type="submit">Salvar</button></div></form></dialog>

@@ -4,36 +4,8 @@
 /* MAQON CRM - cadastro completo de lead */
 .lead-dialog{width:min(760px,94vw);max-height:92vh;overflow:auto}.lead-dialog form{gap:14px}.lead-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.lead-grid input,.lead-grid select,.lead-grid textarea{width:100%;padding:12px;background:#071015;color:#fff;border:1px solid #34434a;border-radius:5px;font:inherit}.lead-grid textarea{resize:vertical;grid-column:span 2}.lead-actions{display:flex;justify-content:flex-end;gap:8px}.lead-actions button{padding:10px 16px}@media(max-width:650px){.lead-grid{grid-template-columns:1fr}.lead-grid textarea{grid-column:span 1}}
 
-/* MAQON V1.0.1 — ajuste final de legibilidade e funil comercial */
-body{font-size:15px}
-.nav{font-size:14px}
-.side-title b{font-size:16px}
-.side-title small{font-size:13px}
-.toolbar label{font-size:12px}
-.toolbar select{font-size:14px}
-.primary{font-size:14px}
-.kpi-title{font-size:13px}
-.cards strong{font-size:31px}
-.cards em{font-size:13px}
-.panel h2{font-size:16px}
-.panel p,.view p{font-size:14px;line-height:1.45}
-table{font-size:12px}
-th{font-size:11.5px}
-th,td{padding:8px 7px}
-.quick b,.quick small{font-size:11px}
-.services b,.services small{font-size:11px}
-footer{font-size:10px}
+/* MAQON V1.0 Comercial — acabamento final */
+.platform-actions{display:flex;gap:8px;justify-content:flex-end;margin:0 0 10px}.platform-actions button{background:#101d24;color:#fff;border:1px solid #806000;border-radius:6px;padding:8px 13px;font-weight:800;cursor:pointer}.platform-actions button:hover{background:#ffc400;color:#080808}.integration-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:18px}.integration-status{display:inline-block;color:#ffc400;font-size:11px;font-weight:800}.integration-link{display:inline-block;text-decoration:none;padding:8px 12px;margin-top:5px}.commercial-grid{grid-template-columns:repeat(auto-fit,minmax(210px,1fr));margin-top:16px}.commercial-grid article{font-size:28px}.module-action{display:inline-block;margin-top:14px;padding:8px 12px}.live-label{color:#8fd5ad!important;font-size:10px!important}.cards.compact article{height:auto;min-height:105px}@media print{aside,.hero,footer,.platform-actions{display:none!important}main{margin:0!important;padding:0!important}.view{display:none!important}.view.active{display:block!important}}
 
-/* Funil: mantém cada informação em sua própria coluna e elimina sobreposição */
-.grid{grid-template-columns:minmax(440px,1.08fr) minmax(0,1.4fr) minmax(330px,.95fr)}
-.funnel{padding:2px 8px 4px;overflow:hidden}
-.funnel div{height:35px;grid-template-columns:minmax(0,1fr) 38px 48px;column-gap:8px;padding:0 22px;font-size:13px;line-height:1;overflow:hidden}
-.funnel div span{display:block;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.funnel div b{display:block;text-align:center;font-size:13px;white-space:nowrap}
-.funnel div small{display:block;text-align:right;font-size:10px;white-space:nowrap}
-.funnel div:nth-child(2){width:91%}
-.funnel div:nth-child(3){width:82%}
-.funnel div:nth-child(4){width:73%}
-.funnel div:nth-child(5){width:64%}
-@media(max-width:1450px){.grid{grid-template-columns:1fr 1.35fr .95fr}.funnel div{padding:0 17px;font-size:12px;grid-template-columns:minmax(0,1fr) 32px 42px;column-gap:5px}.funnel div:nth-child(2){width:94%}.funnel div:nth-child(3){width:88%}.funnel div:nth-child(4){width:82%}.funnel div:nth-child(5){width:76%}}
-@media(max-width:1200px){.grid{grid-template-columns:1fr}.funnel div{font-size:13px;grid-template-columns:minmax(0,1fr) 42px 52px}.funnel div:nth-child(2){width:92%}.funnel div:nth-child(3){width:84%}.funnel div:nth-child(4){width:76%}.funnel div:nth-child(5){width:68%}}
+/* MAQON V1.2 — Central de Integrações Sociais */
+.social-hub,.social-settings,.social-origin-panel{overflow:hidden}.social-head{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}.social-head h2{margin-bottom:5px}.social-head p{margin:0}.social-live{color:#8fd5ad;font-size:12px;font-weight:900;border:1px solid #27513a;background:#0b251b;border-radius:20px;padding:7px 11px}.social-cards{grid-template-columns:repeat(auto-fit,minmax(235px,1fr))}.social-card{position:relative;min-height:205px;display:flex;flex-direction:column;align-items:flex-start}.social-card .social-icon{width:42px;height:42px;border-radius:11px;background:#ffc400;color:#071015;display:grid;place-items:center;font-size:13px;font-weight:1000;margin-bottom:11px;letter-spacing:.3px}.social-card b{font-size:16px}.social-card p{min-height:34px;margin:7px 0;color:#b9c8ce;word-break:break-word}.integration-status.connected{color:#8fd5ad}.integration-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:auto;padding-top:12px}.integration-actions button,.integration-actions a{font-size:11px;font-weight:900;border-radius:5px;padding:9px 11px;cursor:pointer}.integration-actions button{background:#16262d;color:#fff;border:1px solid #3a5059}.integration-actions button:hover{border-color:#ffc400}.disabled-link{opacity:.45;pointer-events:none}.social-form-grid{display:grid;grid-template-columns:repeat(2,minmax(260px,1fr));gap:12px;margin-top:18px}.social-form-grid label{font-size:12px;font-weight:800;color:#c5d3d8}.social-form-grid input{display:block;width:100%;margin-top:6px;padding:11px 12px;background:#071015;color:#fff;border:1px solid #34434a;border-radius:5px;font:inherit}.social-note{margin-top:15px;padding:12px 14px;border-left:4px solid #ffc400;background:#0b171c;color:#cbd8dc;line-height:1.5}.social-origin-grid{display:grid;grid-template-columns:repeat(6,minmax(110px,1fr));gap:10px;margin-top:14px}.social-origin-grid div{background:#0b171c;border:1px solid #2f4149;border-radius:7px;padding:14px}.social-origin-grid span{display:block;color:#aebfc6;font-size:11px}.social-origin-grid strong{display:block;color:#ffc400;font-size:25px;margin-top:6px}@media(max-width:850px){.social-form-grid{grid-template-columns:1fr}.social-origin-grid{grid-template-columns:repeat(2,1fr)}}

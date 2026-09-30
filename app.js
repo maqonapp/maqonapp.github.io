@@ -33,19 +33,21 @@ function updateKPIs(){
  }
  const total=leads.length,service=leads.filter(x=>x[5]==='Em Atendimento').length,proposal=leads.filter(x=>x[5]==='Proposta Enviada').length,negotiation=leads.filter(x=>x[5]==='Negociação').length,clients=leads.filter(x=>x[5]==='Cliente').length; const set=(id,v)=>{const e=document.querySelector(id);if(e)e.textContent=v};set('#kpiTotal',total);set('#kpiNew',leads.filter(x=>x[5]==='Novo Lead').length);set('#kpiService',service);set('#kpiProposal',proposal);set('#kpiClient',clients);set('#kpiConversion',total?`${(clients/total*100).toFixed(1).replace('.',',')}%`:'0,0%'); const donut=document.querySelector('.donut b');if(donut)donut.textContent=total; const funnelValues=[total,service,proposal,negotiation,clients];document.querySelectorAll('.funnel>div').forEach((row,i)=>{const value=funnelValues[i]??0;const b=row.querySelector('b'),small=row.querySelector('small');if(b)b.textContent=value;if(small)small.textContent=(i===0?(total?100:0):(total?Math.round(value/total*100):0))+'%'})
 }
-function render(){renderRecent();renderAll();updateKPIs();setTimeout(()=>{try{renderLiveSummary()}catch(e){}},0)}
+function render(){renderRecent();renderAll();updateKPIs();try{updateSocialLeadCounts()}catch(e){}setTimeout(()=>{try{renderLiveSummary()}catch(e){}},0)}
 function renderLiveSummary(){
  const crm=loadCRMLeads();
  const source=crm.length?crm.map(l=>l.origem||'Outro'):leads.map(l=>l[7]||'Outro');
  const total=source.length, counts={};source.forEach(o=>{const k=o||'Outro';counts[k]=(counts[k]||0)+1});
  const legend=document.querySelector('#originLegend');if(legend){legend.innerHTML=total?Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<p>${esc(k)} <b>${Math.round(v/total*100)}%</b></p>`).join(''):'<p>Sem leads cadastrados.</p>'}
- const pipe=document.querySelector('#financePipeline');if(pipe){const sum=(typeof proposals!=='undefined'?proposals:[]).reduce((a,p)=>a+(Number(p.value)||0),0);pipe.textContent=brl(sum)||'R$ 0,00'}
+ const plist=(typeof proposals!=='undefined'?proposals:[]);const pipe=document.querySelector('#financePipeline');if(pipe){const sum=plist.reduce((a,p)=>a+(Number(p.value)||0),0);pipe.textContent=brl(sum)||'R$ 0,00'}const fpc=document.querySelector('#financeProposalCount');if(fpc)fpc.textContent=plist.length;const fac=document.querySelector('#financeApprovedCount');if(fac)fac.textContent=plist.filter(p=>p.status==='Aprovada').length
 }
 
 render();
 
-function go(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.querySelector('#'+id).classList.add('active');document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.view===id))}
+let maqonViewHistory=['dashboard'];
+function go(id,track=true){const target=document.querySelector('#'+id);if(!target)return;const current=document.querySelector('.view.active')?.id;if(track&&current&&current!==id)maqonViewHistory.push(current);document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));target.classList.add('active');document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.view===id))}
 document.querySelectorAll('.nav').forEach(n=>n.onclick=()=>{if(n.dataset.href){location.href=n.dataset.href;return}go(n.dataset.view)});document.querySelectorAll('[data-go]').forEach(n=>n.onclick=()=>go(n.dataset.go));
+const platformBack=document.querySelector('#platformBack');if(platformBack)platformBack.onclick=()=>{const prev=maqonViewHistory.pop();if(prev)go(prev,false);else go('dashboard',false)};const platformHome=document.querySelector('#platformHome');if(platformHome)platformHome.onclick=()=>go('dashboard');document.querySelectorAll('[data-report-view]').forEach(b=>b.onclick=()=>go(b.dataset.reportView));
 const d=document.querySelector('#leadDialog'),form=document.querySelector('#leadForm');
 function openLead(index=null){editingIndex=index;document.querySelector('#leadDialogTitle').textContent=index===null?'Novo Lead':'Editar Lead';if(index===null){form.reset();document.querySelector('#leadStatus').value='Novo Lead';document.querySelector('#leadPhase').value='Qualificação';document.querySelector('#leadOrigin').value='Manual';document.querySelector('#leadOwner').value='Renan';document.querySelector('#leadMode').value='Compra'}else{const x=leads[index];document.querySelector('#name').value=x[1]||'';document.querySelector('#company').value=x[2]||'';document.querySelector('#phone').value=x[3]||'';document.querySelector('#interest').value=x[4]||'Escavadeira';document.querySelector('#leadStatus').value=x[5]||'Novo Lead';document.querySelector('#leadPhase').value=x[6]||'Qualificação';document.querySelector('#leadOrigin').value=x[7]||'Manual';document.querySelector('#leadEmail').value=x[8]||'';document.querySelector('#leadCity').value=x[9]||'';document.querySelector('#leadUF').value=x[10]||'';document.querySelector('#leadBrandModel').value=x[11]||'';document.querySelector('#leadMode').value=x[12]||'Compra';document.querySelector('#leadBudget').value=x[13]||'';document.querySelector('#leadOwner').value=x[14]||'Renan';document.querySelector('#leadNeed').value=x[15]||'';document.querySelector('#leadNotes').value=x[16]||''}d.showModal()}
 document.querySelector('#newLead').onclick=()=>openLead();document.querySelector('#quickLead').onclick=()=>openLead();document.querySelector('#cancelLead').onclick=()=>d.close();
@@ -204,3 +206,71 @@ document.addEventListener('click',e=>{const ed=e.target.closest('[data-pr-edit]'
 document.querySelector('#proposalSearch').oninput=e=>{const q=e.target.value.toLowerCase();renderProposals(proposals.filter(p=>Object.values(p).join(' ').toLowerCase().includes(q)))};
 const qp=[...document.querySelectorAll('.quick button')].find(b=>b.textContent.includes('Gerar Proposta'));if(qp)qp.onclick=()=>{go('propostas');openProposal()};
 proposalOptions();renderProposals();
+
+
+/* MAQON V1.2 — Central de Integrações Sociais */
+const SOCIAL_KEY='maqon_social_integrations_v1';
+const SOCIAL_DEFAULTS={
+ whatsapp:'5598992202920',
+ instagram:'',
+ facebook:'',
+ linkedin:'',
+ hubspot:'',
+ whatsappMessage:'Olá! Vim pela MAQON e gostaria de atendimento.'
+};
+function loadSocialSettings(){
+ try{return {...SOCIAL_DEFAULTS,...(JSON.parse(localStorage.getItem(SOCIAL_KEY))||{})}}catch(e){return {...SOCIAL_DEFAULTS}}
+}
+function saveSocialSettings(data){localStorage.setItem(SOCIAL_KEY,JSON.stringify(data))}
+function onlyDigits(v=''){return String(v).replace(/\D/g,'')}
+function safeUrl(v=''){
+ const x=String(v).trim(); if(!x)return '';
+ try{const u=new URL(x);return ['http:','https:'].includes(u.protocol)?u.href:''}catch(e){return ''}
+}
+function setSocialLink(id,url,labelId,emptyText,statusId){
+ const a=document.querySelector('#'+id),label=document.querySelector('#'+labelId),status=statusId?document.querySelector('#'+statusId):null;
+ const clean=safeUrl(url);
+ if(a){if(clean){a.href=clean;a.classList.remove('disabled-link')}else{a.removeAttribute('href');a.classList.add('disabled-link')}}
+ if(label)label.textContent=clean?clean.replace(/^https?:\/\//,'').replace(/\/$/,''):emptyText;
+ if(status){status.textContent=clean?'● Configurado':'Configurar perfil';status.classList.toggle('connected',!!clean)}
+}
+function renderSocialIntegrations(){
+ const cfg=loadSocialSettings();
+ const wa=onlyDigits(cfg.whatsapp)||SOCIAL_DEFAULTS.whatsapp;
+ const waText=encodeURIComponent(cfg.whatsappMessage||SOCIAL_DEFAULTS.whatsappMessage);
+ const waOpen=document.querySelector('#waOpen');if(waOpen)waOpen.href=`https://wa.me/${wa}?text=${waText}`;
+ const waLabel=document.querySelector('#waLabel');if(waLabel)waLabel.textContent=wa===SOCIAL_DEFAULTS.whatsapp?'(98) 99220-2920':`+${wa}`;
+ const fields={socialWhatsapp:cfg.whatsapp,socialInstagram:cfg.instagram,socialFacebook:cfg.facebook,socialLinkedin:cfg.linkedin,socialHubspot:cfg.hubspot,socialWhatsappMessage:cfg.whatsappMessage};
+ Object.entries(fields).forEach(([id,v])=>{const el=document.querySelector('#'+id);if(el)el.value=v||''});
+ setSocialLink('igOpen',cfg.instagram,'igLabel','Perfil ainda não configurado','igStatus');
+ setSocialLink('fbOpen',cfg.facebook,'fbLabel','Página ainda não configurada','fbStatus');
+ setSocialLink('liOpen',cfg.linkedin,'liLabel','Página/perfil ainda não configurado','liStatus');
+ setSocialLink('hsOpen',cfg.hubspot,'hsLabel','Portal ainda não configurado','hsStatus');
+ updateSocialLeadCounts();
+}
+function updateSocialLeadCounts(){
+ const crm=loadCRMLeads();
+ const origins=crm.length?crm.map(l=>String(l.origem||'')):leads.map(l=>String(l[7]||''));
+ const aliases={Whatsapp:'WhatsApp',Instagram:'Instagram',Facebook:'Facebook',Linkedin:'LinkedIn','E-mail':'E-mail',Hubspot:'HubSpot'};
+ Object.entries(aliases).forEach(([id,name])=>{const el=document.querySelector('#socialCount'+id);if(el)el.textContent=origins.filter(x=>x.toLowerCase()===name.toLowerCase()).length});
+}
+const saveSocialBtn=document.querySelector('#saveSocialSettings');
+if(saveSocialBtn)saveSocialBtn.addEventListener('click',()=>{
+ const data={
+  whatsapp:onlyDigits(document.querySelector('#socialWhatsapp')?.value)||SOCIAL_DEFAULTS.whatsapp,
+  instagram:safeUrl(document.querySelector('#socialInstagram')?.value),
+  facebook:safeUrl(document.querySelector('#socialFacebook')?.value),
+  linkedin:safeUrl(document.querySelector('#socialLinkedin')?.value),
+  hubspot:safeUrl(document.querySelector('#socialHubspot')?.value),
+  whatsappMessage:(document.querySelector('#socialWhatsappMessage')?.value||SOCIAL_DEFAULTS.whatsappMessage).trim()
+ };
+ saveSocialSettings(data);renderSocialIntegrations();
+ const original=saveSocialBtn.textContent;saveSocialBtn.textContent='✓ Integrações salvas';setTimeout(()=>saveSocialBtn.textContent=original,1800);
+});
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-social-lead]');if(!b)return;
+ const origin=b.dataset.socialLead||'Manual';openLead();
+ const originEl=document.querySelector('#leadOrigin');if(originEl&&[...originEl.options].some(o=>o.value===origin))originEl.value=origin;
+ const notes=document.querySelector('#leadNotes');if(notes)notes.value=`Lead originado pelo canal ${origin}.`;
+});
+renderSocialIntegrations();
