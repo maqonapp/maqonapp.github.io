@@ -204,26 +204,3 @@ document.addEventListener('click',e=>{const ed=e.target.closest('[data-pr-edit]'
 document.querySelector('#proposalSearch').oninput=e=>{const q=e.target.value.toLowerCase();renderProposals(proposals.filter(p=>Object.values(p).join(' ').toLowerCase().includes(q)))};
 const qp=[...document.querySelectorAll('.quick button')].find(b=>b.textContent.includes('Gerar Proposta'));if(qp)qp.onclick=()=>{go('propostas');openProposal()};
 proposalOptions();renderProposals();
-
-
-// MAQON V1.0 Comercial — navegação interna e canais comerciais
-(function(){
- const back=document.querySelector('#maqonBack');
- if(back){back.addEventListener('click',()=>{if(history.state&&history.state.maqonView){history.back()}else{const active=document.querySelector('.view.active');if(active&&active.id!=='dashboard')go('dashboard');else if(history.length>1)history.back()}})}
- const oldGo=go;
- go=function(id,fromHistory){
-   oldGo(id);
-   if(!fromHistory && location.hash!=='#'+id) history.pushState({maqonView:id},'', '#'+id);
- };
- window.addEventListener('popstate',e=>{const id=(e.state&&e.state.maqonView)||location.hash.replace('#','')||'dashboard';if(document.getElementById(id))oldGo(id)});
- const initial=location.hash.replace('#',''); if(initial&&document.getElementById(initial))oldGo(initial);
-
- const KEY='maqon_integrations_v1';
- const fields={whatsapp:'cfgWhatsApp',instagram:'cfgInstagram',facebook:'cfgFacebook',linkedin:'cfgLinkedIn',email:'cfgEmail',site:'cfgSite'};
- function loadCfg(){try{return JSON.parse(localStorage.getItem(KEY))||{email:'maqonapp@gmail.com'}}catch(e){return {email:'maqonapp@gmail.com'}}}
- function normalizeUrl(v){v=(v||'').trim();if(!v)return '';return /^https?:\/\//i.test(v)?v:'https://'+v}
- function refreshCfg(){const c=loadCfg();Object.entries(fields).forEach(([k,id])=>{const el=document.getElementById(id);if(el)el.value=c[k]|| (k==='email'?'maqonapp@gmail.com':'')});[['waStatus','whatsapp'],['igStatus','instagram'],['fbStatus','facebook'],['liStatus','linkedin'],['siteStatus','site']].forEach(([id,k])=>{const e=document.getElementById(id);if(e){const ok=!!c[k];e.textContent=ok?'Configurado':'Não configurado';e.classList.toggle('connected',ok)}})}
- const save=document.getElementById('saveIntegrations');if(save)save.onclick=()=>{const c={};Object.entries(fields).forEach(([k,id])=>c[k]=(document.getElementById(id)?.value||'').trim());if(!c.email)c.email='maqonapp@gmail.com';localStorage.setItem(KEY,JSON.stringify(c));refreshCfg();alert('Canais comerciais salvos com sucesso.')};
- document.querySelectorAll('[data-channel]').forEach(b=>b.addEventListener('click',()=>{const c=loadCfg(),k=b.dataset.channel;let u='';if(k==='whatsapp'){const n=(c.whatsapp||'').replace(/\D/g,'');u=n?'https://wa.me/'+n+'?text='+encodeURIComponent('Olá! Entrei em contato pela plataforma MAQON.'):''}else if(k==='email'){u='mailto:'+(c.email||'maqonapp@gmail.com')}else u=normalizeUrl(c[k]);if(!u){alert('Configure este canal primeiro e clique em “Salvar canais”.');return}window.open(u,'_blank','noopener') }));
- refreshCfg();
-})();
