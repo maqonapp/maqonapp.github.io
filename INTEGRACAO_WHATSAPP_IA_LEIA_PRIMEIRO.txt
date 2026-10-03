@@ -1,0 +1,24 @@
+MAQON V1.4 — AUTOMAÇÃO WHATSAPP BUSINESS + IA
+
+O pacote já deixa a plataforma preparada para:
+- receber mensagens via WhatsApp Business Platform / Cloud API;
+- responder com IA MAQON;
+- criar leads originados do WhatsApp;
+- sincronizar esses leads para o CRM MAQON;
+- manter fila de atendimento humano;
+- testar a IA antes de ativar respostas reais.
+
+IMPORTANTE
+1. A IA automática vem DESLIGADA por padrão.
+2. O bloqueio temporário do cadastro Meta for Developers não impede publicar este código agora.
+3. Assim que o cadastro Meta for Developers for liberado, configure App/WhatsApp, tokens e webhook.
+4. Configure OPENAI_API_KEY somente no backend Render, nunca no GitHub Pages.
+5. Número comercial público MAQON: (98) 98421-8479.
+
+ARQUIVOS PRINCIPAIS ALTERADOS
+- index.html
+- app.js
+- estilo.css
+- backend/server.js
+- backend/.env.example
+- backend/README-META.md

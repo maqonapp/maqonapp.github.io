@@ -1,0 +1,15 @@
+MAQON V1.2 — INTEGRAÇÕES SOCIAIS
+
+ATIVO NESTA VERSÃO
+- WhatsApp Business: link direto no número 55 98 98421-8479.
+- Instagram: campo para salvar o perfil oficial + botão de acesso.
+- Facebook: campo para salvar a página oficial + botão de acesso.
+- LinkedIn: campo para salvar perfil/página oficial + botão de acesso.
+- E-mail: maqonapp@gmail.com ativo por mailto.
+- HubSpot: campo para salvar o endereço do portal + botão de acesso.
+- Novo Lead por canal: cada botão abre o cadastro já marcando a origem do lead.
+- Indicadores de leads por canal social.
+- Configurações ficam salvas no navegador via localStorage.
+
+IMPORTANTE — AUTOMAÇÃO OFICIAL
+A sincronização automática de mensagens/leads das plataformas exige OAuth/API e autorização das contas empresariais. Senhas e tokens não devem ser gravados no HTML/JavaScript público do GitHub. A próxima camada deve usar backend seguro/serverless para receber webhooks e guardar tokens.

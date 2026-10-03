@@ -197,7 +197,7 @@ function viewProposal(i){
  <section class="section"><div class="st"><span class="ico">$</span>INVESTIMENTO</div><div class="investment"><div class="valueBox"><label>VALOR TOTAL</label><strong>${brl(p.value)}</strong><small>Investimento conforme proposta comercial<br>(valores sujeitos à alteração).</small></div><div class="terms"><div class="term"><label>CONDIÇÕES DE PAGAMENTO</label><b>${esc(p.terms||'A combinar / Financiamento bancário')}</b></div><div class="term"><label>PRAZO DE ENTREGA</label><b>A combinar</b></div><div class="term"><label>GARANTIA</label><b>Conforme fabricante / negociação</b></div></div></div></section>
  <section class="section"><div class="st"><span class="ico">☷</span>ESCOPO DA PROPOSTA</div><div class="scopeBox"><ul class="checks">${bullets(scope)}</ul></div></section>
  <section class="section"><div class="st"><span class="ico">▤</span>OBSERVAÇÕES</div><div class="obs"><div class="obsText">Esta proposta é válida pelo período informado e pode ser ajustada conforme negociação. Valores e condições sujeitos à alteração sem aviso prévio.</div><div class="quote">“Máquinas certas,<br>resultados maiores.”</div></div></section></div>
- <footer class="footer"><div class="contacts">☎ (98) 99220-2920 &nbsp; ✉ maqonapp@gmail.com &nbsp; in /maqon</div><div class="footerBrand"><img src="maqon-logo-original-aprovada.png" alt="MAQON"></div></footer></article></main></body></html>`;
+ <footer class="footer"><div class="contacts">☎ (98) 98421-8479 &nbsp; ✉ maqonapp@gmail.com &nbsp; in /maqon</div><div class="footerBrand"><img src="maqon-logo-original-aprovada.png" alt="MAQON"></div></footer></article></main></body></html>`;
  w.document.open(); w.document.write(html); w.document.close();
 }
 document.querySelector('#newProposal').onclick=()=>openProposal();document.querySelector('#cancelProposal').onclick=()=>pd.close();
@@ -211,7 +211,7 @@ proposalOptions();renderProposals();
 /* MAQON V1.3 — Integrações Sociais + camada segura Meta API */
 const SOCIAL_KEY='maqon_social_integrations_v1';
 const SOCIAL_DEFAULTS={
- whatsapp:'5598992202920',
+ whatsapp:'5598984218479',
  instagram:'',
  facebook:'',
  linkedin:'',
@@ -280,7 +280,7 @@ function renderSocialIntegrations(){
  const wa=onlyDigits(cfg.whatsapp)||SOCIAL_DEFAULTS.whatsapp;
  const waText=encodeURIComponent(cfg.whatsappMessage||SOCIAL_DEFAULTS.whatsappMessage);
  const waOpen=document.querySelector('#waOpen');if(waOpen)waOpen.href=`https://wa.me/${wa}?text=${waText}`;
- const waLabel=document.querySelector('#waLabel');if(waLabel)waLabel.textContent=wa===SOCIAL_DEFAULTS.whatsapp?'(98) 99220-2920':`+${wa}`;
+ const waLabel=document.querySelector('#waLabel');if(waLabel)waLabel.textContent=wa===SOCIAL_DEFAULTS.whatsapp?'(98) 98421-8479':`+${wa}`;
  const fields={socialWhatsapp:cfg.whatsapp,socialInstagram:cfg.instagram,socialFacebook:cfg.facebook,socialLinkedin:cfg.linkedin,socialHubspot:cfg.hubspot,socialMetaApiBase:cfg.metaApiBase,socialMetaApiKey:cfg.metaApiKey,socialWhatsappMessage:cfg.whatsappMessage};
  Object.entries(fields).forEach(([id,v])=>{const el=document.querySelector('#'+id);if(el)el.value=v||''});
  setSocialLink('igOpen',cfg.instagram,'igLabel','Perfil ainda não configurado','igStatus');
@@ -354,3 +354,53 @@ if(new URLSearchParams(location.search).get('meta')==='connected'){
  setTimeout(()=>{go('integracoes');history.replaceState({},'',location.pathname+location.hash);refreshMetaStatus(true)},50);
 }
 renderSocialIntegrations();
+
+
+/* MAQON V1.4 — WhatsApp Business + IA OpenAI */
+function setWaAiMessage(message,type=''){
+ const el=document.querySelector('#waAiMessage');if(!el)return;el.textContent=message;el.className='meta-api-message'+(type?' '+type:'');
+}
+function setWaState(id,text,ok=false){const el=document.querySelector('#'+id);if(!el)return;el.textContent=text;el.classList.toggle('ok',!!ok)}
+function renderWaConversations(items=[]){
+ const el=document.querySelector('#waConversationList');if(!el)return;
+ if(!items.length){el.innerHTML='<p class="muted">Nenhuma conversa sincronizada ainda.</p>';return}
+ el.innerHTML=items.map(c=>`<div class="wa-conversation-item"><div><b>${esc(c.name||'Contato WhatsApp')}</b><small>${esc(c.wa_id||'')}</small></div><div><span>${c.handoff?'Aguardando humano':'IA/Atendimento'}</span><small>${esc(c.last_message?.text||'')}</small></div></div>`).join('');
+}
+async function refreshWhatsAppAiStatus(showErrors=false){
+ if(!document.querySelector('#waAiStatus'))return;
+ const base=metaBase();if(!base){document.querySelector('#waAiStatus').textContent='Backend não configurado';return}
+ try{
+  const s=await metaFetch('/api/whatsapp/status');
+  setWaState('waCloudState',s.cloud_configured?'CONFIGURADA':'PENDENTE',s.cloud_configured);
+  setWaState('waOpenAiState',s.openai_configured?'CONFIGURADA':'PENDENTE',s.openai_configured);
+  setWaState('waAutomationState',s.ai_enabled?'ATIVA':'DESLIGADA',s.ai_enabled);
+  const ids={waLeadCount:s.leads||0,waConversationCount:s.conversations||0,waHandoffCount:s.handoffs||0};Object.entries(ids).forEach(([id,v])=>{const e=document.querySelector('#'+id);if(e)e.textContent=v});
+  const st=document.querySelector('#waAiStatus');if(st){st.textContent=s.ai_enabled?'● IA ativa':'● IA pronta para configuração';st.classList.toggle('connected',!!s.ai_enabled)}
+  const toggle=document.querySelector('#waAiToggleBtn');if(toggle){toggle.textContent=s.ai_enabled?'Desativar IA':'Ativar IA';toggle.dataset.enabled=s.ai_enabled?'1':'0'}
+  try{const c=await metaFetch('/api/whatsapp/conversations?limit=6');renderWaConversations(c.conversations||[])}catch(e){}
+  if(showErrors)setWaAiMessage(`Backend respondeu. Cloud API: ${s.cloud_configured?'ok':'pendente'} • OpenAI: ${s.openai_configured?'ok':'pendente'} • Modelo: ${s.model||'—'}`,'ok');
+  return s;
+ }catch(err){const st=document.querySelector('#waAiStatus');if(st)st.textContent='● Backend indisponível';if(showErrors)setWaAiMessage(err.message,'error')}
+}
+function importWhatsAppLeads(items=[]){
+ let db;try{db=JSON.parse(localStorage.getItem('maqon_automation_v1'))||{}}catch(e){db={}};
+ db.leads=Array.isArray(db.leads)?db.leads:[];db.events=Array.isArray(db.events)?db.events:[];
+ const existing=new Map(db.leads.map(x=>[String(x.whatsappLeadId||''),x]));let added=0,updated=0;
+ items.forEach(item=>{
+  if(!item.id)return;const key=String(item.id),now=new Date().toISOString();const data={whatsappLeadId:key,nome:item.nome||'Contato WhatsApp',empresa:item.empresa||'',whatsapp:item.whatsapp||'',email:item.email||'',cidade:item.cidade||'',estado:item.estado||'',tipoEquipamento:item.tipoEquipamento||'',marcaModelo:item.marcaModelo||'',compraLocacao:item.compraLocacao||'Consultoria',orcamento:item.orcamento||'',objetivo:item.objetivo||'Atendimento recebido pelo WhatsApp Business.',observacoes:[item.observacoes,item.ultimaMensagem?('Última mensagem: '+item.ultimaMensagem):''].filter(Boolean).join(' | '),responsavel:item.responsavel||'Equipe Comercial',origem:'WhatsApp',status:item.status||'Novo Lead',atualizadoEm:item.atualizadoEm||now,handoff:!!item.handoff};
+  if(existing.has(key)){Object.assign(existing.get(key),data);updated++}else{db.leads.unshift({id:key,criadoEm:item.criadoEm||now,...data});added++}
+  db.events.unshift({tipo:'lead_whatsapp_sincronizado',leadId:key,origem:'WhatsApp',quando:now});
+ });
+ localStorage.setItem('maqon_automation_v1',JSON.stringify(db));return {added,updated};
+}
+const waAiRefreshBtn=document.querySelector('#waAiRefreshBtn');if(waAiRefreshBtn)waAiRefreshBtn.onclick=()=>refreshWhatsAppAiStatus(true);
+const waAiToggleBtn=document.querySelector('#waAiToggleBtn');if(waAiToggleBtn)waAiToggleBtn.onclick=async()=>{
+ try{const current=waAiToggleBtn.dataset.enabled==='1';const r=await metaFetch('/api/whatsapp/automation',{method:'POST',body:JSON.stringify({enabled:!current})});setWaAiMessage(r.ai_enabled?'IA de atendimento ativada. Novas mensagens poderão ser respondidas automaticamente.':'IA de atendimento desativada.','ok');await refreshWhatsAppAiStatus(false)}catch(err){setWaAiMessage(err.message,'error')}
+};
+const waAiPreviewBtn=document.querySelector('#waAiPreviewBtn');if(waAiPreviewBtn)waAiPreviewBtn.onclick=async()=>{
+ try{const message=document.querySelector('#waAiPreviewInput')?.value.trim();if(!message)throw new Error('Digite uma mensagem de teste.');setWaAiMessage('Gerando resposta de teste...');const r=await metaFetch('/api/ai/preview',{method:'POST',body:JSON.stringify({message})});setWaAiMessage('Resposta IA: '+r.reply,'ok')}catch(err){setWaAiMessage(err.message,'error')}
+};
+const waSyncCrmBtn=document.querySelector('#waSyncCrmBtn');if(waSyncCrmBtn)waSyncCrmBtn.onclick=async()=>{
+ try{setWaAiMessage('Sincronizando leads do WhatsApp...');const r=await metaFetch('/api/whatsapp/leads');const out=importWhatsAppLeads(r.leads||[]);render();updateSocialLeadCounts();setWaAiMessage(`WhatsApp → CRM concluído: ${out.added} novo(s), ${out.updated} atualizado(s).`,'ok');await refreshWhatsAppAiStatus(false)}catch(err){setWaAiMessage(err.message,'error')}
+};
+setTimeout(()=>refreshWhatsAppAiStatus(false),100);

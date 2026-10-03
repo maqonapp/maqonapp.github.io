@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MAQON | Painel de Controle V1.2 Social</title>
+<title>MAQON | Painel de Controle V1.4 WhatsApp IA</title>
 <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
@@ -96,7 +96,7 @@
   <article class="panel social-hub">
     <div class="social-head"><div><h2>Central de Integrações Sociais</h2><p>Conecte os canais comerciais da MAQON, abra atendimentos e registre a origem de cada lead no funil.</p></div><span class="social-live">● Central ativa</span></div>
     <div class="integration-grid social-cards">
-      <div class="panel social-card" data-channel="WhatsApp"><div class="social-icon">WA</div><b>WhatsApp Business</b><p id="waLabel">(98) 99220-2920</p><span class="integration-status connected">● Ativo por link direto</span><div class="integration-actions"><a id="waOpen" class="primary integration-link" target="_blank" rel="noopener">Abrir WhatsApp</a><button type="button" data-social-lead="WhatsApp">＋ Lead</button></div></div>
+      <div class="panel social-card" data-channel="WhatsApp"><div class="social-icon">WA</div><b>WhatsApp Business</b><p id="waLabel">(98) 98421-8479</p><span class="integration-status connected">● Ativo por link direto</span><div class="integration-actions"><a id="waOpen" class="primary integration-link" target="_blank" rel="noopener">Abrir WhatsApp</a><button type="button" data-social-lead="WhatsApp">＋ Lead</button></div></div>
       <div class="panel social-card" data-channel="Instagram"><div class="social-icon">IG</div><b>Instagram</b><p id="igLabel">Perfil ainda não configurado</p><span id="igStatus" class="integration-status">Configurar perfil</span><div class="integration-actions"><a id="igOpen" class="primary integration-link disabled-link" target="_blank" rel="noopener">Abrir Instagram</a><button type="button" data-meta-connect>Conectar API</button><button type="button" data-social-lead="Instagram">＋ Lead</button></div></div>
       <div class="panel social-card" data-channel="Facebook"><div class="social-icon">FB</div><b>Facebook</b><p id="fbLabel">Página ainda não configurada</p><span id="fbStatus" class="integration-status">Configurar página</span><div class="integration-actions"><a id="fbOpen" class="primary integration-link disabled-link" target="_blank" rel="noopener">Abrir Facebook</a><button type="button" data-meta-connect>Conectar API</button><button type="button" data-social-lead="Facebook">＋ Lead</button></div></div>
       <div class="panel social-card" data-channel="LinkedIn"><div class="social-icon">IN</div><b>LinkedIn</b><p id="liLabel">Página/perfil ainda não configurado</p><span id="liStatus" class="integration-status">Configurar LinkedIn</span><div class="integration-actions"><a id="liOpen" class="primary integration-link disabled-link" target="_blank" rel="noopener">Abrir LinkedIn</a><button type="button" data-social-lead="LinkedIn">＋ Lead</button></div></div>
@@ -108,7 +108,7 @@
   <article class="panel social-settings">
     <div class="social-head"><div><h2>Configuração dos canais</h2><p>Salve os endereços oficiais uma única vez. Os dados ficam no navegador e podem ser alterados quando necessário.</p></div><button type="button" class="primary" id="saveSocialSettings">Salvar integrações</button></div>
     <div class="social-form-grid">
-      <label>WhatsApp Business<input id="socialWhatsapp" inputmode="tel" placeholder="5598992202920"></label>
+      <label>WhatsApp Business<input id="socialWhatsapp" inputmode="tel" placeholder="5598984218479"></label>
       <label>Instagram<input id="socialInstagram" type="url" placeholder="https://instagram.com/seu_perfil"></label>
       <label>Facebook<input id="socialFacebook" type="url" placeholder="https://facebook.com/sua_pagina"></label>
       <label>LinkedIn<input id="socialLinkedin" type="url" placeholder="https://linkedin.com/company/... ou /in/..."></label>
@@ -129,15 +129,31 @@
     <div id="metaApiMessage" class="meta-api-message">Informe a URL do backend seguro acima e salve as integrações.</div>
   </article>
 
+  <article class="panel meta-api-panel wa-ai-panel">
+    <div class="social-head"><div><h2>IA de Atendimento — WhatsApp Business</h2><p>Atendimento inicial automatizado, qualificação de leads e encaminhamento para consultor humano.</p></div><span id="waAiStatus" class="integration-status">Aguardando backend</span></div>
+    <div class="wa-ai-status-grid">
+      <div><span>Cloud API</span><strong id="waCloudState">—</strong></div>
+      <div><span>OpenAI</span><strong id="waOpenAiState">—</strong></div>
+      <div><span>Atendimento IA</span><strong id="waAutomationState">DESLIGADO</strong></div>
+      <div><span>Leads WhatsApp</span><strong id="waLeadCount">0</strong></div>
+      <div><span>Conversas</span><strong id="waConversationCount">0</strong></div>
+      <div><span>Fila humana</span><strong id="waHandoffCount">0</strong></div>
+    </div>
+    <div class="meta-api-actions wa-ai-actions"><button type="button" id="waAiRefreshBtn">Atualizar status</button><button type="button" class="primary" id="waAiToggleBtn">Ativar IA</button><button type="button" id="waSyncCrmBtn">Sincronizar WhatsApp → CRM</button></div>
+    <div class="wa-ai-preview"><label>Teste seguro da IA<input id="waAiPreviewInput" placeholder="Ex.: Preciso comparar uma retroescavadeira para compra."></label><button type="button" id="waAiPreviewBtn">Testar resposta</button></div>
+    <div id="waAiMessage" class="meta-api-message">A IA vem desligada por padrão. Teste primeiro e só ative após configurar Cloud API + OpenAI no backend.</div>
+    <div class="wa-conversation-list"><h3>Últimos atendimentos</h3><div id="waConversationList"><p class="muted">Nenhuma conversa sincronizada ainda.</p></div></div>
+  </article>
+
   <article class="panel social-origin-panel"><h2>Leads por canal social</h2><div class="social-origin-grid"><div><span>WhatsApp</span><strong id="socialCountWhatsapp">0</strong></div><div><span>Instagram</span><strong id="socialCountInstagram">0</strong></div><div><span>Facebook</span><strong id="socialCountFacebook">0</strong></div><div><span>LinkedIn</span><strong id="socialCountLinkedin">0</strong></div><div><span>E-mail</span><strong id="socialCountEmail">0</strong></div><div><span>HubSpot</span><strong id="socialCountHubspot">0</strong></div></div></article>
 </section>
 <section id="propostas" class="view"><h1>Propostas</h1><article class="panel"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><h2>Gestão de Propostas Comerciais</h2><p><strong id="proposalCount">0</strong> propostas cadastradas • <strong id="proposalSentCount">0</strong> enviadas</p></div><button class="primary" id="newProposal">＋ Nova Proposta</button></div><input id="proposalSearch" placeholder="Pesquisar proposta..." style="min-width:280px;margin:14px 0"><div style="overflow:auto"><table><thead><tr><th>#</th><th>Cliente</th><th>Empresa</th><th>Equipamento</th><th>Modalidade</th><th>Valor</th><th>Validade</th><th>Status</th><th>Ações</th></tr></thead><tbody id="proposalRows"></tbody></table></div></article></section>
 <section id="financeiro" class="view"><h1>Financeiro</h1><article class="panel"><h2>Pipeline Comercial</h2><p>Valores calculados a partir das propostas cadastradas na plataforma.</p><div class="cards compact"><article><span>Valor total</span><strong id="financePipeline">R$ 0,00</strong></article><article><span>Propostas</span><strong id="financeProposalCount">0</strong></article><article><span>Aprovadas</span><strong id="financeApprovedCount">0</strong></article></div></article></section>
 <section id="relatorios" class="view"><h1>Relatórios</h1><article class="panel"><h2>Central de Relatórios</h2><p>Acesse os dados consolidados da operação e utilize a impressão do navegador para gerar PDF quando necessário.</p><div class="modulecards commercial-grid"><article>▥<b>Executivo</b><span>Indicadores gerais e funil comercial.</span><button class="primary module-action" data-report-view="dashboard">Abrir</button></article><article>⌁<b>Técnico</b><span>Análises de equipamentos cadastrados.</span><button class="primary module-action" data-report-view="analises">Abrir</button></article><article>▤<b>Comercial</b><span>Propostas e pipeline de vendas.</span><button class="primary module-action" data-report-view="propostas">Abrir</button></article><article>🖨<b>Exportar</b><span>Imprima a tela atual ou salve em PDF.</span><button class="primary module-action" onclick="window.print()">Imprimir / PDF</button></article></div></article></section>
-<section id="config" class="view"><h1>Configurações</h1><article class="panel"><h2>Dados da plataforma</h2><p><b>Produto:</b> MAQON — Consultoria em Equipamentos Pesados</p><p><b>Contato oficial:</b> maqonapp@gmail.com</p><p><b>Versão:</b> V1.3 Comercial + Meta API</p><p><b>Armazenamento atual:</b> dados operacionais salvos no navegador deste dispositivo.</p><p><b>Integrações:</b> credenciais externas não ficam expostas nesta página.</p><hr style="border-color:#31434b"><p>Antes da venda em escala/multiusuário, a próxima evolução técnica é autenticação e banco de dados em nuvem.</p></article></section>
+<section id="config" class="view"><h1>Configurações</h1><article class="panel"><h2>Dados da plataforma</h2><p><b>Produto:</b> MAQON — Consultoria em Equipamentos Pesados</p><p><b>Contato oficial:</b> maqonapp@gmail.com</p><p><b>Versão:</b> V1.4 Comercial + WhatsApp IA</p><p><b>Armazenamento atual:</b> dados operacionais salvos no navegador deste dispositivo.</p><p><b>Integrações:</b> credenciais externas não ficam expostas nesta página.</p><hr style="border-color:#31434b"><p>Antes da venda em escala/multiusuário, a próxima evolução técnica é autenticação e banco de dados em nuvem.</p></article></section>
 </main>
 
-<footer><b>MAQON</b><span class="foot-left">CONSULTORIA EM EQUIPAMENTOS PESADOS　|　✉ maqonapp@gmail.com　|　PLANEJAMENTO　|　ANÁLISE　|　CUSTO-BENEFÍCIO　|　DISPONIBILIDADE　|　PRODUTIVIDADE　|　SEGURANÇA</span><span class="foot-right">Máquinas em movimento. Resultados para você.　 <strong>V1.3</strong>　● Online</span></footer>
+<footer><b>MAQON</b><span class="foot-left">CONSULTORIA EM EQUIPAMENTOS PESADOS　|　✉ maqonapp@gmail.com　|　PLANEJAMENTO　|　ANÁLISE　|　CUSTO-BENEFÍCIO　|　DISPONIBILIDADE　|　PRODUTIVIDADE　|　SEGURANÇA</span><span class="foot-right">Máquinas em movimento. Resultados para você.　 <strong>V1.4</strong>　● Online</span></footer>
 
 <dialog id="leadDialog" class="lead-dialog"><form id="leadForm"><h2 id="leadDialogTitle">Novo Lead</h2>
 <div class="lead-grid">
