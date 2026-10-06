@@ -98,6 +98,10 @@ async function hubspotCreate(objectType,properties){
 async function hubspotUpdate(objectType,id,properties){
  return hubspotRequest(`/crm/objects/${HUBSPOT_API_VERSION}/${encodeURIComponent(objectType)}/${encodeURIComponent(id)}`,{method:'PATCH',body:{properties:compactProps(properties)}});
 }
+
+async function hubspotAssociateDefault(fromType,fromId,toType,toId){
+ return hubspotRequest(`/crm/v4/objects/${encodeURIComponent(fromType)}/${encodeURIComponent(fromId)}/associations/default/${encodeURIComponent(toType)}/${encodeURIComponent(toId)}`,{method:'PUT'});
+}
 async function hubspotUpsertContact(lead={}){
  const name=splitName(lead.nome||lead.name||'');
  const props=compactProps({email:lead.email,firstname:name.firstname,lastname:name.lastname,phone:lead.whatsapp||lead.phone||lead.telefone,city:lead.cidade||lead.city,state:lead.estado||lead.uf||lead.state});
@@ -120,7 +124,12 @@ async function hubspotUpsertCompany(lead={}){
 async function hubspotSyncLead(lead={}){
  const contact=await hubspotUpsertContact(lead);
  const company=await hubspotUpsertCompany(lead);
- return {contact,company,deal:{ready:true,synced:false,reason:'Negócios serão ativados após validar o pipeline/etapa do portal MAQON para evitar registros incorretos.'}};
+ let association=null;
+ if(contact?.record?.id && company?.record?.id){
+  await hubspotAssociateDefault('contacts',contact.record.id,'companies',company.record.id);
+  association={contact_id:contact.record.id,company_id:company.record.id,linked:true};
+ }
+ return {contact,company,association,deal:{ready:true,synced:false,reason:'Negócios serão ativados após validar o pipeline/etapa do portal MAQON para evitar registros incorretos.'}};
 }
 async function graph(pathname,token,options={}){
  const u=new URL(`${GRAPH_BASE}/${String(pathname).replace(/^\//,'')}`);if(token)u.searchParams.set('access_token',token);
