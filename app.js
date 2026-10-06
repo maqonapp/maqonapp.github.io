@@ -404,3 +404,153 @@ const waSyncCrmBtn=document.querySelector('#waSyncCrmBtn');if(waSyncCrmBtn)waSyn
  try{setWaAiMessage('Sincronizando leads do WhatsApp...');const r=await metaFetch('/api/whatsapp/leads');const out=importWhatsAppLeads(r.leads||[]);render();updateSocialLeadCounts();setWaAiMessage(`WhatsApp → CRM concluído: ${out.added} novo(s), ${out.updated} atualizado(s).`,'ok');await refreshWhatsAppAiStatus(false)}catch(err){setWaAiMessage(err.message,'error')}
 };
 setTimeout(()=>refreshWhatsAppAiStatus(false),100);
+/* MAQON V1.4.1 — HubSpot CRM Service Key */
+function setHubSpotMessage(message,type=''){
+  const el=document.querySelector('#hubspotApiMessage');if(!el)return;
+  el.textContent=message;
+  el.className='meta-api-message'+(type?' '+type:'');
+}
+function setHubSpotState(id,text,ok=false){
+  const el=document.querySelector('#'+id);if(!el)return;
+  el.textContent=text;
+  el.style.color=ok?'#77e7ba':'#ffc400';
+}
+function ensureHubSpotPanel(){
+  if(document.querySelector('#hubspotApiPanel'))return;
+  const host=document.querySelector('#integracoes');if(!host)return;
+  const panel=document.createElement('section');
+  panel.id='hubspotApiPanel';
+  panel.style.cssText='margin-top:12px;border:1px solid #5d4a00;border-radius:10px;background:#0b171d;padding:14px;color:#fff;';
+  panel.innerHTML=`
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+      <div>
+        <h3 style="margin:0 0 4px;color:#fff">HubSpot CRM — MAQON</h3>
+        <p style="margin:0;color:#d6e0e4">Sincronização segura de Contatos, Empresas e Negócios usando a Service Key armazenada somente no backend.</p>
+      </div>
+      <b id="hubspotApiStatus" style="color:#ffc400">● Verificando...</b>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(150px,1fr));gap:10px;margin:14px 0">
+      <div style="border:1px solid #30444d;border-radius:8px;padding:12px"><small style="display:block;color:#9fb2bb">SERVICE KEY</small><b id="hubspotKeyState">—</b></div>
+      <div style="border:1px solid #30444d;border-radius:8px;padding:12px"><small style="display:block;color:#9fb2bb">CONEXÃO API</small><b id="hubspotConnectionState">—</b></div>
+      <div style="border:1px solid #30444d;border-radius:8px;padding:12px"><small style="display:block;color:#9fb2bb">VERSÃO API</small><b id="hubspotVersionState">—</b></div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+      <button type="button" id="hubspotRefreshBtn" class="secondary">Testar HubSpot</button>
+      <button type="button" id="hubspotSyncCrmBtn">Sincronizar CRM → HubSpot</button>
+      <button type="button" id="hubspotSyncWaBtn" class="secondary">WhatsApp → HubSpot</button>
+    </div>
+    <div id="hubspotApiMessage" class="meta-api-message">Aguardando teste seguro da conexão com o HubSpot.</div>`;
+  host.appendChild(panel);
+
+  const refresh=document.querySelector('#hubspotRefreshBtn');
+  const syncCrm=document.querySelector('#hubspotSyncCrmBtn');
+  const syncWa=document.querySelector('#hubspotSyncWaBtn');
+  if(refresh)refresh.onclick=()=>refreshHubSpotStatus(true);
+  if(syncCrm)syncCrm.onclick=syncCurrentCrmToHubSpot;
+  if(syncWa)syncWa.onclick=syncWhatsAppToHubSpot;
+}
+
+function currentCrmLeadsForHubSpot(){
+  const auto=loadCRMLeads();
+  if(auto.length)return auto;
+  return (leads||[]).map(x=>({
+    nome:x[1]||'',
+    empresa:x[2]||'',
+    whatsapp:x[3]||'',
+    tipoEquipamento:x[4]||'',
+    status:x[5]||'Novo Lead',
+    fase:x[6]||'',
+    origem:x[7]||'CRM MAQON',
+    email:x[8]||'',
+    cidade:x[9]||'',
+    estado:x[10]||'',
+    marcaModelo:x[11]||'',
+    compraLocacao:x[12]||'',
+    orcamento:x[13]||'',
+    responsavel:x[14]||'',
+    objetivo:x[15]||'',
+    observacoes:x[16]||''
+  }));
+}
+
+async function refreshHubSpotStatus(showErrors=false){
+  ensureHubSpotPanel();
+  if(!document.querySelector('#hubspotApiStatus'))return;
+  const base=metaBase();
+  if(!base){
+    document.querySelector('#hubspotApiStatus').textContent='● Backend não configurado';
+    setHubSpotState('hubspotKeyState','PENDENTE',false);
+    setHubSpotState('hubspotConnectionState','PENDENTE',false);
+    return;
+  }
+  try{
+    document.querySelector('#hubspotApiStatus').textContent='● Verificando...';
+    const s=await metaFetch('/api/hubspot/status');
+    setHubSpotState('hubspotKeyState',s.configured?'CONFIGURADA':'PENDENTE',!!s.configured);
+    setHubSpotState('hubspotConnectionState',s.connected?'CONECTADA':'PENDENTE',!!s.connected);
+    setHubSpotState('hubspotVersionState',s.api_version||'—',!!s.connected);
+    const st=document.querySelector('#hubspotApiStatus');
+    if(st){
+      st.textContent=s.connected?'● HubSpot conectado':'● HubSpot pendente';
+      st.style.color=s.connected?'#77e7ba':'#ffc400';
+    }
+    const hs=document.querySelector('#hsStatus');
+    if(hs && s.connected){hs.textContent='● API conectada';hs.classList.add('connected')}
+    if(showErrors)setHubSpotMessage(
+      s.connected
+        ? `HubSpot respondeu com sucesso. Service Key ativa • API ${s.api_version||'—'}.`
+        : (s.error||'Service Key configurada, mas a conexão ainda não foi validada.'),
+      s.connected?'ok':'error'
+    );
+    return s;
+  }catch(err){
+    const st=document.querySelector('#hubspotApiStatus');
+    if(st){st.textContent='● HubSpot indisponível';st.style.color='#ff6b6b'}
+    if(showErrors)setHubSpotMessage(err.message,'error');
+  }
+}
+
+async function syncCurrentCrmToHubSpot(){
+  try{
+    const status=await refreshHubSpotStatus(false);
+    if(!status?.connected)throw new Error('Teste a conexão HubSpot antes de sincronizar.');
+    const items=currentCrmLeadsForHubSpot();
+    if(!items.length){setHubSpotMessage('Nenhum lead disponível no CRM MAQON para sincronizar.','ok');return}
+    setHubSpotMessage(`Sincronizando ${items.length} lead(s) do CRM MAQON com o HubSpot...`);
+    let ok=0,failed=0;
+    for(const lead of items.slice(0,100)){
+      if(!String(lead.email||lead.whatsapp||lead.phone||lead.telefone||'').trim()){failed++;continue}
+      try{
+        await metaFetch('/api/hubspot/sync-lead',{method:'POST',body:JSON.stringify({lead})});
+        ok++;
+      }catch(e){failed++}
+    }
+    setHubSpotMessage(`CRM → HubSpot concluído: ${ok} sincronizado(s)${failed?` • ${failed} ignorado(s)/falha(s)`:''}.`,'ok');
+  }catch(err){setHubSpotMessage(err.message,'error')}
+}
+
+async function syncWhatsAppToHubSpot(){
+  try{
+    const status=await refreshHubSpotStatus(false);
+    if(!status?.connected)throw new Error('Teste a conexão HubSpot antes de sincronizar.');
+    setHubSpotMessage('Sincronizando leads do WhatsApp armazenados no backend com o HubSpot...');
+    const r=await metaFetch('/api/hubspot/sync-whatsapp-leads',{method:'POST',body:'{}'});
+    setHubSpotMessage(`WhatsApp → HubSpot: ${r.succeeded||0} sincronizado(s) • ${r.failed||0} falha(s) • ${r.processed||0} processado(s).`,'ok');
+  }catch(err){setHubSpotMessage(err.message,'error')}
+}
+
+function markFrontendV141(){
+  try{
+    [...document.querySelectorAll('span,small,b,strong,div')].forEach(el=>{
+      if(el.children.length===0 && el.textContent.trim()==='V1.4')el.textContent='V1.4.1';
+    });
+  }catch(e){}
+}
+
+setTimeout(()=>{
+  try{
+    ensureHubSpotPanel();
+    refreshHubSpotStatus(false);
+    markFrontendV141();
+  }catch(e){}
+},180);
