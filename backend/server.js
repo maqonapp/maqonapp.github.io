@@ -12,11 +12,14 @@ const GRAPH_VERSION = process.env.META_GRAPH_VERSION || 'v26.0';
 const GRAPH_BASE = `https://graph.facebook.com/${GRAPH_VERSION}`;
 const FRONTEND_ORIGINS = String(process.env.FRONTEND_URL || '').split(',').map(s=>s.trim()).filter(Boolean);
 const DATA_FILE = path.resolve(process.env.DATA_FILE || './data/meta-store.enc');
+const HUBSPOT_BASE = 'https://api.hubapi.com';
+const HUBSPOT_API_VERSION = '2026-03';
 
 const metaRequired = ['MAQON_ADMIN_TOKEN','TOKEN_ENCRYPTION_KEY','META_APP_ID','META_APP_SECRET','META_REDIRECT_URI','META_WEBHOOK_VERIFY_TOKEN'];
 const waRequired = ['WHATSAPP_ACCESS_TOKEN','WHATSAPP_PHONE_NUMBER_ID','WHATSAPP_WABA_ID','WHATSAPP_WEBHOOK_VERIFY_TOKEN'];
 const missing = list => list.filter(k=>!process.env[k]);
 const aiConfigured = () => !!process.env.OPENAI_API_KEY;
+const hubspotConfigured = () => !!process.env.HUBSPOT_SERVICE_KEY;
 const waConfigured = () => missing(waRequired).length === 0 && !!String(process.env.WHATSAPP_APP_SECRET||process.env.META_APP_SECRET||'');
 const metaConfigured = () => missing(metaRequired).length === 0;
 
@@ -71,6 +74,53 @@ function verifyState(value){
 async function fetchJson(url,options={}){
  const r=await fetch(url,options);let data={};try{data=await r.json()}catch(e){}
  if(!r.ok || data.error)throw new Error(data.error?.message||`HTTP ${r.status}`);return data;
+}
+
+function compactProps(obj={}){return Object.fromEntries(Object.entries(obj).filter(([,v])=>v!==undefined&&v!==null&&String(v).trim()!==''));}
+function splitName(name=''){
+ const parts=String(name).trim().split(/\s+/).filter(Boolean);return {firstname:parts[0]||'',lastname:parts.slice(1).join(' ')};
+}
+async function hubspotRequest(pathname,options={}){
+ if(!hubspotConfigured())throw new Error('HUBSPOT_SERVICE_KEY não configurada.');
+ const url=new URL(`${HUBSPOT_BASE}${pathname.startsWith('/')?pathname:`/${pathname}`}`);
+ const init={method:options.method||'GET',headers:{'Authorization':`Bearer ${process.env.HUBSPOT_SERVICE_KEY}`,'Accept':'application/json'}};
+ if(options.body!==undefined){init.headers['Content-Type']='application/json';init.body=JSON.stringify(options.body);}
+ return fetchJson(url,init);
+}
+async function hubspotSearch(objectType,propertyName,value,properties=[]){
+ if(!String(value||'').trim())return null;
+ const data=await hubspotRequest(`/crm/v3/objects/${encodeURIComponent(objectType)}/search`,{method:'POST',body:{filterGroups:[{filters:[{propertyName,operator:'EQ',value:String(value)}]}],properties,limit:1,after:'0',sorts:[]}});
+ return data?.results?.[0]||null;
+}
+async function hubspotCreate(objectType,properties){
+ return hubspotRequest(`/crm/objects/${HUBSPOT_API_VERSION}/${encodeURIComponent(objectType)}`,{method:'POST',body:{properties:compactProps(properties)}});
+}
+async function hubspotUpdate(objectType,id,properties){
+ return hubspotRequest(`/crm/objects/${HUBSPOT_API_VERSION}/${encodeURIComponent(objectType)}/${encodeURIComponent(id)}`,{method:'PATCH',body:{properties:compactProps(properties)}});
+}
+async function hubspotUpsertContact(lead={}){
+ const name=splitName(lead.nome||lead.name||'');
+ const props=compactProps({email:lead.email,firstname:name.firstname,lastname:name.lastname,phone:lead.whatsapp||lead.phone||lead.telefone,city:lead.cidade||lead.city,state:lead.estado||lead.uf||lead.state});
+ let existing=null;
+ if(props.email)existing=await hubspotSearch('contacts','email',props.email,['email','firstname','lastname','phone','city','state']);
+ if(!existing && props.phone)existing=await hubspotSearch('contacts','phone',props.phone,['email','firstname','lastname','phone','city','state']);
+ if(existing)return {record:await hubspotUpdate('contacts',existing.id,props),created:false};
+ return {record:await hubspotCreate('contacts',props),created:true};
+}
+async function hubspotUpsertCompany(lead={}){
+ const name=String(lead.empresa||lead.company||'').trim();if(!name)return null;
+ const domain=String(lead.dominio||lead.domain||'').trim();
+ const props=compactProps({name,domain,city:lead.cidade||lead.city,state:lead.estado||lead.uf||lead.state,phone:lead.telefone_empresa||lead.company_phone});
+ let existing=null;
+ if(domain)existing=await hubspotSearch('companies','domain',domain,['name','domain','city','state','phone']);
+ if(!existing)existing=await hubspotSearch('companies','name',name,['name','domain','city','state','phone']);
+ if(existing)return {record:await hubspotUpdate('companies',existing.id,props),created:false};
+ return {record:await hubspotCreate('companies',props),created:true};
+}
+async function hubspotSyncLead(lead={}){
+ const contact=await hubspotUpsertContact(lead);
+ const company=await hubspotUpsertCompany(lead);
+ return {contact,company,deal:{ready:true,synced:false,reason:'Negócios serão ativados após validar o pipeline/etapa do portal MAQON para evitar registros incorretos.'}};
 }
 async function graph(pathname,token,options={}){
  const u=new URL(`${GRAPH_BASE}/${String(pathname).replace(/^\//,'')}`);if(token)u.searchParams.set('access_token',token);
@@ -219,7 +269,7 @@ async function processWhatsAppPayload(payload){
  writeStore(store);
 }
 
-app.get('/health',(req,res)=>res.json({ok:true,service:'MAQON Integrations + WhatsApp AI',graph_version:GRAPH_VERSION,meta_configured:metaConfigured(),whatsapp_configured:waConfigured(),openai_configured:aiConfigured()}));
+app.get('/health',(req,res)=>res.json({ok:true,service:'MAQON Integrations + WhatsApp AI + HubSpot CRM',graph_version:GRAPH_VERSION,hubspot_api_version:HUBSPOT_API_VERSION,meta_configured:metaConfigured(),whatsapp_configured:waConfigured(),openai_configured:aiConfigured(),hubspot_configured:hubspotConfigured()}));
 
 // Webhook Meta Lead Ads
 app.get('/api/meta/webhook',(req,res)=>{
@@ -319,6 +369,34 @@ app.post('/api/whatsapp/handoff',requireAdmin,(req,res)=>{
  const waId=normalizeWa(req.body?.wa_id);const store=readStore();const c=(store.whatsapp_conversations||{})[waId];if(!c)return res.status(404).json({error:'Conversa não encontrada.'});c.handoff=!!req.body?.handoff;const lead=(store.whatsapp_leads||[]).find(x=>x.wa_id===waId);if(lead)lead.handoff=c.handoff;writeStore(store);res.json({ok:true,handoff:c.handoff});
 });
 
+// HubSpot CRM — Service Key MAQON
+app.get('/api/hubspot/status',requireAdmin,async(req,res)=>{
+ if(!hubspotConfigured())return res.json({configured:false,connected:false,api_version:HUBSPOT_API_VERSION});
+ try{
+  const data=await hubspotRequest(`/crm/objects/${HUBSPOT_API_VERSION}/contacts?limit=1&properties=email,firstname,lastname`);
+  res.json({configured:true,connected:true,api_version:HUBSPOT_API_VERSION,sample_count:Array.isArray(data.results)?data.results.length:0});
+ }catch(e){res.status(400).json({configured:true,connected:false,api_version:HUBSPOT_API_VERSION,error:String(e.message||e)});}
+});
+app.post('/api/hubspot/sync-lead',requireAdmin,async(req,res)=>{
+ try{
+  const lead=req.body?.lead||req.body||{};
+  if(!lead || typeof lead!=='object')return res.status(400).json({error:'Lead inválido.'});
+  if(!String(lead.email||lead.whatsapp||lead.phone||lead.telefone||'').trim())return res.status(400).json({error:'Informe pelo menos e-mail ou telefone do lead.'});
+  const out=await hubspotSyncLead(lead);
+  res.json({ok:true,...out,synced_at:nowIso()});
+ }catch(e){res.status(400).json({error:String(e.message||e)});}
+});
+app.post('/api/hubspot/sync-whatsapp-leads',requireAdmin,async(req,res)=>{
+ try{
+  const store=readStore();const leads=Array.isArray(store.whatsapp_leads)?store.whatsapp_leads:[];
+  const results=[];
+  for(const lead of leads.slice(0,100)){
+   try{results.push({id:lead.id,ok:true,...await hubspotSyncLead(lead)});}catch(e){results.push({id:lead.id,ok:false,error:String(e.message||e)});}
+  }
+  res.json({ok:true,total:leads.length,processed:results.length,succeeded:results.filter(x=>x.ok).length,failed:results.filter(x=>!x.ok).length,results});
+ }catch(e){res.status(400).json({error:String(e.message||e)});}
+});
+
 app.use((err,req,res,next)=>{if(err?.message==='Origem não autorizada')return res.status(403).json({error:err.message});res.status(500).json({error:'Erro interno no backend MAQON.'});});
 
-app.listen(PORT,()=>{console.log(`MAQON backend ativo na porta ${PORT} (${GRAPH_VERSION}).`);if(!metaConfigured())console.warn('Meta incompleta:',missing(metaRequired).join(', '));if(!waConfigured())console.warn('WhatsApp incompleto:',missing(waRequired).join(', '));if(!aiConfigured())console.warn('IA incompleta: OPENAI_API_KEY ausente.');});
+app.listen(PORT,()=>{console.log(`MAQON backend ativo na porta ${PORT} (${GRAPH_VERSION}).`);if(!metaConfigured())console.warn('Meta incompleta:',missing(metaRequired).join(', '));if(!waConfigured())console.warn('WhatsApp incompleto:',missing(waRequired).join(', '));if(!aiConfigured())console.warn('IA incompleta: OPENAI_API_KEY ausente.');if(!hubspotConfigured())console.warn('HubSpot incompleto: HUBSPOT_SERVICE_KEY ausente.');else console.log(`HubSpot CRM configurado (${HUBSPOT_API_VERSION}).`);});
