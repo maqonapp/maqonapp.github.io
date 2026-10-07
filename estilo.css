@@ -1,22 +1,221 @@
 :root{--gold:#ffc400;--gold2:#d99b00;--bg:#05090c;--panel:#0b151b;--panel2:#101d24;--line:#2b3b43;--text:#f6f7f8;--muted:#a9b3b8;--green:#20df70;--blue:#259ee8}*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}body{min-height:100vh;font-size:14px}.hero{height:222px;margin-left:190px;background:#050505 url('maqon-banner-v4.png') center/cover no-repeat;border-bottom:2px solid #8b6500}aside{position:fixed;left:0;top:0;bottom:0;width:190px;background:linear-gradient(180deg,#081116,#05090c);border-right:1px solid #725500;z-index:5}.side-title{height:172px;padding:20px 22px;border-bottom:1px solid #6f5200;display:flex;flex-direction:column;justify-content:center}.user-avatar{width:50px;height:50px;border:2px solid var(--gold);border-radius:50%;display:grid;place-items:center;color:var(--gold);font-size:22px;margin-bottom:10px}.side-title b{font-size:15px}.side-title small{color:#b8c1c5;margin-top:3px}.online{margin-top:9px;color:#6ce49a;font-size:11px;background:#0d3d2b;border-radius:12px;padding:4px 8px;width:max-content}.nav{width:100%;height:48px;border:0;border-bottom:1px solid #18262c;background:transparent;color:#fff;text-align:left;padding:0 22px;font-weight:700;cursor:pointer;font-size:13px}.nav span{margin-left:10px}.nav.active,.nav:hover{background:linear-gradient(90deg,#d49a00,#6c4d00 78%,#17150c);color:#050505}.sidebrand{position:absolute;bottom:50px;left:16px;right:16px;border:1px solid #26363e;border-radius:7px;padding:16px 12px;font-size:11px;line-height:1.35}.helmet{font-size:25px;color:var(--gold);margin-bottom:6px}.sidebrand strong{color:var(--gold);font-size:15px}.sidebrand small{display:block;color:#7f8b90;margin-top:10px;font-size:8px}main{margin-left:190px;padding:10px 14px 94px;background:radial-gradient(circle at 70% 0%,#11170f 0,#071015 28%,#05090c 70%);min-height:calc(100vh - 222px)}.view{display:none}.view.active{display:block}.toolbar{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 160px;gap:10px;margin-bottom:10px}.toolbar label{height:52px;padding:7px 12px;border:1px solid var(--line);border-radius:7px;background:linear-gradient(180deg,#111d24,#091318);font-size:11px;color:var(--gold);font-weight:800;box-shadow:inset 0 1px 0 #ffffff08}.toolbar select{display:block;width:100%;border:0;background:transparent;color:#fff;font-weight:800;font-size:13px;outline:0}.toolbar option{background:#0d1519}.primary{background:linear-gradient(180deg,#ffdc55,#f1b400);border:1px solid #ffd23b;border-radius:6px;color:#080808;font-weight:900;cursor:pointer;box-shadow:0 0 18px #ffbf0028}.cards{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:10px}.cards article{height:108px;background:linear-gradient(145deg,#101c23,#081217);border:1px solid #31434b;border-radius:8px;padding:13px 14px;position:relative;overflow:hidden;box-shadow:inset 0 1px 0 #ffffff0a}.kpi-title{display:flex;align-items:center;gap:8px;font-weight:800;font-size:12px}.kpi-title i{font-style:normal;color:var(--gold);font-size:22px;min-width:24px}.cards strong{display:block;font-size:29px;margin:8px 0 5px}.cards em{font-style:normal;color:var(--green);font-weight:900;font-size:12px}.spark{position:absolute;right:10px;bottom:10px;color:var(--gold);font-size:19px;letter-spacing:-3px}.grid{display:grid;grid-template-columns:1.02fr 1.4fr .95fr;gap:10px;margin-bottom:10px}.panel{background:linear-gradient(145deg,#0f1b22,#081217);border:1px solid #31434b;border-radius:8px;padding:12px;box-shadow:inset 0 1px 0 #ffffff08}.panel h2{font-size:15px;margin:0 0 10px}.funnel{padding:1px 6px}.funnel div{height:33px;margin:auto;display:grid;grid-template-columns:1fr 44px 46px;align-items:center;padding:0 14px;color:#111;font-weight:800;background:linear-gradient(90deg,#ffe36a,#f7b800);clip-path:polygon(5% 0,95% 0,86% 100%,14% 100%)}.funnel div:nth-child(2){width:89%;filter:brightness(.92)}.funnel div:nth-child(3){width:78%;filter:brightness(.82)}.funnel div:nth-child(4){width:67%;filter:brightness(.72)}.funnel div:nth-child(5){width:56%;filter:brightness(.62)}.funnel small{text-align:right;font-size:11px}.chart-legend{float:right;color:#cbd3d6;font-size:10px;font-weight:500}.chart{height:160px;display:flex;align-items:flex-end;gap:5px;padding:18px 10px 4px;border-left:1px solid #31434b;border-bottom:1px solid #31434b;background:repeating-linear-gradient(0deg,transparent 0 31px,#33444c44 32px)}.chart i{flex:1;min-width:4px;background:linear-gradient(180deg,#ffe45b,#c48800);box-shadow:0 0 8px #ffc40022}.dates{display:flex;justify-content:space-between;font-size:9px;color:#c7d0d4;padding:5px 6px 0}.origin-wrap{display:flex;align-items:center;justify-content:center;gap:22px}.donut{width:126px;height:126px;border-radius:50%;background:conic-gradient(#ffc000 0 35%,#318eea 35% 63%,#78bdf2 63% 81%,#e4e8ea 81% 93%,#727b80 93%);display:grid;place-content:center;position:relative}.donut:before{content:'';position:absolute;inset:24px;border-radius:50%;background:#091217}.donut b,.donut span{position:relative;z-index:2;text-align:center}.donut b{font-size:25px}.donut span{font-size:9px}.legend{font-size:11px;min-width:118px}.legend p{display:flex;align-items:center;gap:6px;margin:8px 0}.legend p b{margin-left:auto}.legend i{width:9px;height:9px;border-radius:50%;display:inline-block}.c1{background:#ffc000}.c2{background:#318eea}.c3{background:#78bdf2}.c4{background:#e4e8ea}.c5{background:#727b80}.lower{display:grid;grid-template-columns:3.3fr 1fr;gap:10px;margin-bottom:10px}.table{overflow:auto}.table h2{display:flex;justify-content:space-between}.link{border:0;background:none;color:var(--gold);font-weight:900;cursor:pointer}table{width:100%;border-collapse:collapse;font-size:10.5px}th,td{text-align:left;padding:7px 7px;border-bottom:1px solid #28373d;white-space:nowrap}th{font-size:10px;color:#dfe5e7}.badge{padding:4px 7px;border-radius:4px;font-weight:900;background:#f0b800;color:#101010}.badge[data-status="Em Atendimento"],.badge[data-status="Cliente"]{background:#1bc565}.badge[data-status="Negociação"]{background:#7547d8;color:#fff}.actions{color:#bfc9cd;letter-spacing:3px}.quick-panel{padding:11px}.quick{display:grid;grid-template-columns:1fr 1fr;gap:8px}.quick button{min-height:69px;border:1px solid #8b6800;background:linear-gradient(145deg,#132229,#091217);color:#fff;border-radius:7px;font-size:20px;cursor:pointer}.quick b,.quick small{display:block;font-size:10px;margin-top:4px}.quick small{color:#b8c1c5}.quick button:hover{border-color:var(--gold);transform:translateY(-1px)}.services{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}.services button{height:58px;border:1px solid #3b4c54;background:linear-gradient(145deg,#101c22,#081217);color:var(--gold);border-radius:7px;display:flex;align-items:center;gap:10px;justify-content:center;font-size:20px}.services span{text-align:left}.services b,.services small{display:block;font-size:10px;color:#fff}.services small{color:#c3cbce;margin-top:2px;font-weight:400}.view>h1{color:var(--gold);letter-spacing:1px}.modulecards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.modulecards article{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:25px;font-size:35px}.modulecards b,.modulecards span{display:block;font-size:15px;margin-top:12px}.modulecards span{color:var(--muted);font-size:12px}.compact{grid-template-columns:repeat(3,1fr)}footer{position:fixed;left:190px;right:0;bottom:0;height:46px;background:#05090c;border-top:1px solid #806000;padding:14px 16px;font-size:9.5px;z-index:4;white-space:nowrap}footer>b{color:var(--gold);font-size:13px;margin-right:18px}.foot-left{color:#d5dadd}.foot-right{float:right;color:#9da7aa}.foot-right strong{background:var(--gold);color:#111;padding:5px 7px;border-radius:3px}dialog{background:#0d171c;color:#fff;border:1px solid #6e5700;border-radius:8px;width:420px}dialog form{display:grid;gap:10px}dialog input,dialog select,#search{padding:12px;background:#071015;color:#fff;border:1px solid #34434a;border-radius:5px}@media(max-width:1200px){.hero,main{margin-left:76px}.hero{height:180px}aside{width:76px}.side-title{height:180px;padding:12px}.side-title b,.side-title small,.online,.nav span,.sidebrand{display:none}.nav{text-align:center;padding:0}.cards{grid-template-columns:repeat(3,1fr)}.toolbar{grid-template-columns:repeat(2,1fr)}.grid,.lower{grid-template-columns:1fr}.services{grid-template-columns:repeat(3,1fr)}footer{left:76px}.foot-left{display:none}}@media(max-width:700px){.hero{height:130px}.cards{grid-template-columns:1fr 1fr}.toolbar{grid-template-columns:1fr}.services{grid-template-columns:1fr 1fr}.quick{grid-template-columns:1fr 1fr}}
-/* MAQON V4.1.3: bloco promocional inferior removido do HTML para liberar integralmente o menu lateral. */
+/* MAQON V4.1.1 — correção da barra lateral */
+.sidebrand{bottom:58px;padding:8px 10px;min-height:0;line-height:1.20;background:#071015}
+.sidebrand .helmet{display:none}
+.sidebrand strong{display:block;margin-top:2px;font-size:13px;line-height:1.15}
+.sidebrand small{margin-top:5px;font-size:7px;line-height:1.1}
+@media (max-height:760px) and (min-width:1201px){.sidebrand{display:none}}
 
-/* MAQON CRM - cadastro completo de lead */
-.lead-dialog{width:min(760px,94vw);max-height:92vh;overflow:auto}.lead-dialog form{gap:14px}.lead-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.lead-grid input,.lead-grid select,.lead-grid textarea{width:100%;padding:12px;background:#071015;color:#fff;border:1px solid #34434a;border-radius:5px;font:inherit}.lead-grid textarea{resize:vertical;grid-column:span 2}.lead-actions{display:flex;justify-content:flex-end;gap:8px}.lead-actions button{padding:10px 16px}@media(max-width:650px){.lead-grid{grid-template-columns:1fr}.lead-grid textarea{grid-column:span 1}}
 
-/* MAQON V1.0 Comercial — acabamento final */
-.platform-actions{display:flex;gap:8px;justify-content:flex-end;margin:0 0 10px}.platform-actions button{background:#101d24;color:#fff;border:1px solid #806000;border-radius:6px;padding:8px 13px;font-weight:800;cursor:pointer}.platform-actions button:hover{background:#ffc400;color:#080808}.integration-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:18px}.integration-status{display:inline-block;color:#ffc400;font-size:11px;font-weight:800}.integration-link{display:inline-block;text-decoration:none;padding:8px 12px;margin-top:5px}.commercial-grid{grid-template-columns:repeat(auto-fit,minmax(210px,1fr));margin-top:16px}.commercial-grid article{font-size:28px}.module-action{display:inline-block;margin-top:14px;padding:8px 12px}.live-label{color:#8fd5ad!important;font-size:10px!important}.cards.compact article{height:auto;min-height:105px}@media print{aside,.hero,footer,.platform-actions{display:none!important}main{margin:0!important;padding:0!important}.view{display:none!important}.view.active{display:block!important}}
+/* MAQON V4.1.2 FINAL — remoção definitiva do bloco inferior da sidebar */
+.sidebrand,
+.sidebar .sidebrand,
+aside .sidebrand {
+  display:none !important;
+  visibility:hidden !important;
+  height:0 !important;
+  min-height:0 !important;
+  max-height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  pointer-events:none !important;
+}
 
-/* MAQON V1.2 — Central de Integrações Sociais */
-.social-hub,.social-settings,.social-origin-panel{overflow:hidden}.social-head{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}.social-head h2{margin-bottom:5px}.social-head p{margin:0}.social-live{color:#8fd5ad;font-size:12px;font-weight:900;border:1px solid #27513a;background:#0b251b;border-radius:20px;padding:7px 11px}.social-cards{grid-template-columns:repeat(auto-fit,minmax(235px,1fr))}.social-card{position:relative;min-height:205px;display:flex;flex-direction:column;align-items:flex-start}.social-card .social-icon{width:42px;height:42px;border-radius:11px;background:#ffc400;color:#071015;display:grid;place-items:center;font-size:13px;font-weight:1000;margin-bottom:11px;letter-spacing:.3px}.social-card b{font-size:16px}.social-card p{min-height:34px;margin:7px 0;color:#b9c8ce;word-break:break-word}.integration-status.connected{color:#8fd5ad}.integration-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:auto;padding-top:12px}.integration-actions button,.integration-actions a{font-size:11px;font-weight:900;border-radius:5px;padding:9px 11px;cursor:pointer}.integration-actions button{background:#16262d;color:#fff;border:1px solid #3a5059}.integration-actions button:hover{border-color:#ffc400}.disabled-link{opacity:.45;pointer-events:none}.social-form-grid{display:grid;grid-template-columns:repeat(2,minmax(260px,1fr));gap:12px;margin-top:18px}.social-form-grid label{font-size:12px;font-weight:800;color:#c5d3d8}.social-form-grid input{display:block;width:100%;margin-top:6px;padding:11px 12px;background:#071015;color:#fff;border:1px solid #34434a;border-radius:5px;font:inherit}.social-note{margin-top:15px;padding:12px 14px;border-left:4px solid #ffc400;background:#0b171c;color:#cbd8dc;line-height:1.5}.social-origin-grid{display:grid;grid-template-columns:repeat(6,minmax(110px,1fr));gap:10px;margin-top:14px}.social-origin-grid div{background:#0b171c;border:1px solid #2f4149;border-radius:7px;padding:14px}.social-origin-grid span{display:block;color:#aebfc6;font-size:11px}.social-origin-grid strong{display:block;color:#ffc400;font-size:25px;margin-top:6px}@media(max-width:850px){.social-form-grid{grid-template-columns:1fr}.social-origin-grid{grid-template-columns:repeat(2,1fr)}}
 
-/* MAQON V1.3 — Meta API */
-.wide-social{grid-column:1/-1}.meta-api-panel{border-color:#3a4b52}.meta-api-grid{display:grid;grid-template-columns:minmax(280px,.8fr) 2fr;gap:16px;align-items:end;margin-top:16px}.meta-api-grid label{font-size:12px;font-weight:800;color:#c5d3d8}.meta-api-grid select{display:block;width:100%;margin-top:6px;padding:11px 12px;background:#071015;color:#fff;border:1px solid #34434a;border-radius:5px}.meta-api-actions{display:flex;gap:8px;flex-wrap:wrap}.meta-api-actions button{border:1px solid #3a5059;background:#16262d;color:#fff;border-radius:5px;padding:10px 12px;font-weight:900;cursor:pointer}.meta-api-actions button.primary{background:#ffc400;color:#071015;border-color:#ffc400}.meta-api-message{margin-top:14px;padding:11px 13px;border-radius:6px;background:#0b171c;border:1px solid #2f4149;color:#cbd8dc}.meta-api-message.ok{border-color:#27513a;color:#9fdfba}.meta-api-message.error{border-color:#703b35;color:#ffaaa2}.social-note code{color:#ffc400}@media(max-width:900px){.meta-api-grid{grid-template-columns:1fr}}
+/* =========================================================
+   MAQON V1.4.2 — RESPONSIVO MOBILE
+   Mantém o visual desktop e reorganiza a interface no celular.
+   ========================================================= */
+@media (max-width: 768px){
+  html,body{width:100%;max-width:100%;overflow-x:hidden}
+  body{min-height:100dvh;padding-bottom:66px}
 
-/* MAQON V1.4 — WhatsApp Business + IA */
-.wa-ai-panel{border-color:#725500;background:linear-gradient(145deg,#101b1f,#071015)}
-.wa-ai-status-grid{display:grid;grid-template-columns:repeat(6,minmax(110px,1fr));gap:9px;margin:16px 0}
-.wa-ai-status-grid>div{background:#071015;border:1px solid #31434b;border-radius:7px;padding:12px}
-.wa-ai-status-grid span{display:block;color:#aebfc6;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px}
-.wa-ai-status-grid strong{display:block;margin-top:7px;color:#ffc400;font-size:14px}.wa-ai-status-grid strong.ok{color:#8fd5ad}
-.wa-ai-actions{margin:4px 0 14px}.wa-ai-preview{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end;margin-top:12px}.wa-ai-preview label{font-size:12px;font-weight:800;color:#c5d3d8}.wa-ai-preview input{display:block;width:100%;margin-top:6px;padding:11px 12px;background:#071015;color:#fff;border:1px solid #34434a;border-radius:5px}.wa-ai-preview button{height:40px;border:1px solid #725500;background:#16262d;color:#fff;border-radius:5px;padding:0 14px;font-weight:900;cursor:pointer}.wa-ai-preview button:hover{border-color:#ffc400}.wa-conversation-list{margin-top:14px}.wa-conversation-list h3{font-size:12px;color:#ffc400;margin:0 0 8px}.wa-conversation-item{display:grid;grid-template-columns:1fr 1.4fr;gap:12px;padding:9px 10px;border-top:1px solid #293b43;background:#081319}.wa-conversation-item:first-child{border-top:0}.wa-conversation-item b,.wa-conversation-item span{display:block;font-size:11px}.wa-conversation-item small{display:block;color:#94a7ae;font-size:10px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.muted{color:#8fa1a8}@media(max-width:950px){.wa-ai-status-grid{grid-template-columns:repeat(3,1fr)}}@media(max-width:650px){.wa-ai-status-grid{grid-template-columns:repeat(2,1fr)}.wa-ai-preview{grid-template-columns:1fr}.wa-conversation-item{grid-template-columns:1fr}}
+  /* Banner ocupa toda a largura e mantém a identidade visual */
+  .hero{
+    margin-left:0!important;
+    width:100%!important;
+    height:145px!important;
+    background-size:contain!important;
+    background-position:center center!important;
+    background-repeat:no-repeat!important;
+    background-color:#050505!important;
+  }
+
+  /* Navegação móvel: barra inferior com todos os módulos acessíveis */
+  aside{
+    position:fixed!important;
+    top:auto!important;
+    left:0!important;
+    right:0!important;
+    bottom:0!important;
+    width:100%!important;
+    height:66px!important;
+    border-right:0!important;
+    border-top:1px solid #806000!important;
+    background:linear-gradient(180deg,#081116,#05090c)!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    -webkit-overflow-scrolling:touch;
+    z-index:999!important;
+  }
+  .side-title,.sidebrand{display:none!important}
+  aside nav{
+    display:flex!important;
+    align-items:stretch!important;
+    width:max-content!important;
+    min-width:100%!important;
+    height:66px!important;
+    padding:0!important;
+  }
+  .nav{
+    flex:0 0 82px!important;
+    width:82px!important;
+    height:66px!important;
+    padding:7px 4px!important;
+    border-bottom:0!important;
+    border-right:1px solid #18262c!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:3px!important;
+    text-align:center!important;
+    font-size:18px!important;
+    line-height:1!important;
+  }
+  .nav span{
+    display:block!important;
+    margin:0!important;
+    max-width:74px!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+    font-size:9px!important;
+    line-height:1.1!important;
+  }
+  .nav.active,.nav:hover{background:linear-gradient(180deg,#d49a00,#6c4d00)!important;color:#050505!important}
+
+  /* Conteúdo em largura total */
+  main{
+    margin-left:0!important;
+    width:100%!important;
+    min-width:0!important;
+    padding:10px 10px 20px!important;
+    min-height:auto!important;
+  }
+  .view,.panel,.cards,.grid,.lower,.services,.modulecards{min-width:0!important;max-width:100%!important}
+  .view>h1{font-size:21px!important;margin:10px 0 14px!important}
+
+  /* Filtros e ações */
+  .toolbar{grid-template-columns:1fr 1fr!important;gap:8px!important}
+  .toolbar label{height:auto!important;min-height:52px!important}
+  .toolbar .primary{grid-column:1/-1!important;min-height:48px!important}
+
+  /* KPIs */
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  .cards article{height:auto!important;min-height:108px!important;padding:12px!important}
+  .cards strong{font-size:26px!important}
+  .compact{grid-template-columns:1fr!important}
+
+  /* Dashboard */
+  .grid,.lower{grid-template-columns:1fr!important;gap:10px!important}
+  .panel{width:100%!important;padding:12px!important;overflow:hidden}
+  .origin-wrap{flex-wrap:wrap!important;gap:14px!important}
+  .chart{min-width:0!important;width:100%!important}
+  .chart-legend{float:none!important;display:block!important;margin-top:4px!important}
+
+  /* Tabelas: mantém todas as colunas, com rolagem horizontal */
+  .table,
+  [style*="overflow:auto"]{
+    overflow-x:auto!important;
+    -webkit-overflow-scrolling:touch;
+  }
+  table{min-width:720px!important;width:100%!important}
+  th,td{padding:9px 8px!important;font-size:11px!important}
+
+  /* Ações rápidas e serviços */
+  .quick,.services{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  .quick button{min-height:72px!important}
+  .services button{height:auto!important;min-height:64px!important;padding:8px!important}
+  .modulecards{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  .modulecards article{padding:18px!important}
+
+  /* Campos e botões ficam tocáveis no celular */
+  input,select,textarea,button{max-width:100%}
+  input,select,textarea{font-size:16px!important}
+  #search,#equipmentSearch,#proposalSearch{width:100%!important;min-width:0!important}
+  #equipamentos .panel>div:first-child,
+  #propostas .panel>div:first-child,
+  #analises .panel>div:first-of-type{
+    align-items:stretch!important;
+  }
+  #equipamentos .primary,#propostas .primary,#analises .primary{min-height:46px!important}
+
+  /* Comparativos e layouts inline antigos */
+  #comparativos [style*="grid-template-columns"],
+  #integracoes [style*="grid-template-columns"],
+  #config [style*="grid-template-columns"]{
+    grid-template-columns:1fr!important;
+  }
+  #analises label[style*="min-width"]{min-width:0!important;width:100%!important}
+
+  /* Integrações adicionadas pelas versões V1.3/V1.4/V1.4.1 */
+  .social-grid,.integration-grid,.integrations-grid,.wa-grid,.wa-ai-grid,
+  .hubspot-grid,.hubspot-actions,.meta-grid,.integration-cards{
+    grid-template-columns:1fr!important;
+    width:100%!important;
+  }
+  .wa-conversation-item{grid-template-columns:1fr!important;gap:8px!important}
+  #integracoes .panel,#config .panel{overflow-wrap:anywhere}
+
+  /* Janelas de cadastro */
+  dialog{
+    width:calc(100vw - 20px)!important;
+    max-width:440px!important;
+    max-height:88dvh!important;
+    overflow:auto!important;
+    margin:auto!important;
+    padding:16px!important;
+  }
+  dialog form{width:100%!important}
+  dialog button{min-height:44px!important}
+
+  /* Rodapé não cobre o conteúdo no celular */
+  footer{
+    position:relative!important;
+    left:0!important;
+    right:auto!important;
+    bottom:auto!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:46px!important;
+    padding:10px 10px 14px!important;
+    white-space:normal!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:8px!important;
+    flex-wrap:wrap!important;
+    font-size:9px!important;
+    z-index:1!important;
+  }
+  .foot-left{display:none!important}
+  .foot-right{float:none!important;margin-left:auto!important;text-align:right!important}
+}
+
+@media (max-width: 480px){
+  .hero{height:124px!important}
+  .toolbar{grid-template-columns:1fr!important}
+  .cards{grid-template-columns:1fr 1fr!important}
+  .modulecards{grid-template-columns:1fr!important}
+  .quick,.services{grid-template-columns:1fr 1fr!important}
+  .funnel div{padding:0 8px!important;grid-template-columns:1fr 38px 40px!important;font-size:11px!important}
+  .origin-wrap{flex-direction:column!important}
+  .panel h2{font-size:14px!important}
+}
+
+@media (max-width: 360px){
+  .cards,.quick,.services{grid-template-columns:1fr!important}
+  .nav{flex-basis:76px!important;width:76px!important}
+}
