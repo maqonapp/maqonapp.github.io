@@ -629,3 +629,28 @@ aside .sidebrand {
   .lead-actions{position:sticky!important;bottom:-16px!important;background:#0d171c!important;padding:10px 0 12px!important;z-index:2!important}
   .lead-actions button{flex:1!important;min-width:0!important}
 }
+
+
+/* =========================================================
+   MAQON V1.5.2 — RÓTULOS DO FORMULÁRIO DE LEAD
+   Evita confusão entre Status, Fase, Responsável e Origem.
+   ========================================================= */
+.lead-field{
+  display:grid!important;
+  gap:6px!important;
+  min-width:0!important;
+  color:#dfe7ea!important;
+  font-size:11px!important;
+  font-weight:800!important;
+  letter-spacing:.15px!important;
+}
+.lead-field>span{
+  color:var(--gold)!important;
+  padding-left:2px!important;
+}
+.lead-field-wide{grid-column:1/-1!important}
+.lead-field-wide textarea{min-height:118px!important}
+@media(max-width:768px){
+  .lead-field-wide{grid-column:auto!important}
+  .lead-field{font-size:11px!important}
+}
