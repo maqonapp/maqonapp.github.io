@@ -219,3 +219,114 @@ aside .sidebrand {
   .cards,.quick,.services{grid-template-columns:1fr!important}
   .nav{flex-basis:76px!important;width:76px!important}
 }
+
+/* =========================================================
+   MAQON V1.4.3 — REFINAMENTO MOBILE
+   Ajustes visuais após validação em smartphone.
+   ========================================================= */
+@media (max-width: 768px){
+  body{padding-bottom:78px!important}
+
+  /* Banner mais compacto, sem grandes faixas vazias */
+  .hero{
+    height:104px!important;
+    background-size:cover!important;
+    background-position:center center!important;
+    background-repeat:no-repeat!important;
+    background-color:#05090c!important;
+  }
+
+  main{padding:8px 8px 18px!important}
+
+  /* Botões auxiliares que no mobile estavam com aparência padrão do navegador */
+  main button:not(.primary):not(.nav):not(.link){
+    background:linear-gradient(180deg,#14242c,#091217)!important;
+    color:#f6f7f8!important;
+    border:1px solid #806000!important;
+    border-radius:7px!important;
+    padding:8px 12px!important;
+    font-weight:800!important;
+  }
+
+  /* Filtros compactos em duas colunas */
+  .toolbar{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px!important;
+    margin-bottom:8px!important;
+  }
+  .toolbar label{
+    min-height:68px!important;
+    height:auto!important;
+    padding:8px 10px!important;
+    font-size:11px!important;
+  }
+  .toolbar select{
+    font-size:15px!important;
+    line-height:1.2!important;
+    padding-top:5px!important;
+  }
+  .toolbar .primary{
+    grid-column:1/-1!important;
+    min-height:50px!important;
+    font-size:15px!important;
+  }
+
+  /* KPIs em duas colunas para aproximar a leitura do desktop */
+  .cards{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px!important;
+  }
+  .cards article{
+    min-height:106px!important;
+    height:auto!important;
+    padding:11px!important;
+  }
+  .cards strong{font-size:27px!important}
+  .kpi-title{font-size:11px!important;gap:6px!important}
+  .kpi-title i{font-size:19px!important;min-width:20px!important}
+  .spark{font-size:16px!important}
+
+  /* Barra inferior: 5 módulos visíveis por vez e rótulos em até 2 linhas */
+  aside{height:72px!important}
+  aside nav{height:72px!important}
+  .nav{
+    flex:0 0 20vw!important;
+    width:20vw!important;
+    max-width:20vw!important;
+    min-width:64px!important;
+    height:72px!important;
+    padding:6px 3px!important;
+    font-size:17px!important;
+    gap:4px!important;
+  }
+  .nav span{
+    display:-webkit-box!important;
+    -webkit-box-orient:vertical!important;
+    -webkit-line-clamp:2!important;
+    white-space:normal!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    max-width:100%!important;
+    font-size:8.5px!important;
+    line-height:1.12!important;
+    text-align:center!important;
+  }
+
+  /* Evita que o menu fixo cubra a parte final da tela */
+  footer{margin-bottom:4px!important}
+}
+
+@media (max-width: 480px){
+  .hero{height:96px!important;background-size:cover!important}
+  .toolbar{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .toolbar label{min-height:66px!important}
+  .panel{border-radius:7px!important}
+  .quick,.services{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+
+@media (max-width: 340px){
+  .toolbar{grid-template-columns:1fr!important}
+  .cards{grid-template-columns:1fr!important}
+  .nav{flex-basis:25vw!important;width:25vw!important;max-width:25vw!important}
+}
