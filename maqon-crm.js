@@ -12,7 +12,7 @@ function render(){
  let d=normalize(load()),root=document.getElementById('board'); if(!root)return;
  document.getElementById('total').textContent=d.leads.length;
  document.getElementById('qual').textContent=d.leads.filter(x=>['Qualificado','Análise Técnica','Proposta','Negociação','Fechado'].includes(x.status)).length;
- document.getElementById('prop').textContent=d.leads.filter(x=>['Proposta','Negociação'].includes(x.status)).length;
+ document.getElementById('prop').textContent=d.leads.filter(x=>x.status==='Proposta').length;
  document.getElementById('closed').textContent=d.leads.filter(x=>x.status==='Fechado').length;
  root.innerHTML=STAGES.map(s=>`<section class="col"><header>${s}<em>${d.leads.filter(x=>x.status===s).length}</em></header><div class="cards">${d.leads.filter(x=>x.status===s).map(card).join('')||'<i>Sem leads</i>'}</div></section>`).join('');
 }
