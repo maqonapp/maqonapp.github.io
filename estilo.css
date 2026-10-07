@@ -446,3 +446,32 @@ aside .sidebrand {
     background-position:center center!important;
   }
 }
+
+/* =========================================================
+   MAQON V1.4.6 — BANNER MOBILE INTEGRAL
+   Exibe toda a arte horizontal no celular, sem corte lateral.
+   ========================================================= */
+@media (max-width: 768px){
+  .hero{
+    margin-left:0!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    aspect-ratio:2171 / 398!important;
+    background-image:url('maqon-banner-v4-mobile.png')!important;
+    background-size:100% 100%!important;
+    background-position:center center!important;
+    background-repeat:no-repeat!important;
+    background-color:#05090c!important;
+    border-bottom:2px solid #8b6500!important;
+  }
+}
+
+@media (max-width: 480px){
+  .hero{
+    height:auto!important;
+    aspect-ratio:2171 / 398!important;
+    background-size:100% 100%!important;
+    background-position:center center!important;
+  }
+}
