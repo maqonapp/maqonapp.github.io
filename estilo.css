@@ -330,3 +330,72 @@ aside .sidebrand {
   .cards{grid-template-columns:1fr!important}
   .nav{flex-basis:25vw!important;width:25vw!important;max-width:25vw!important}
 }
+
+/* =========================================================
+   MAQON V1.4.4 — ACABAMENTO MOBILE
+   Validação em smartphone 07/10/2026.
+   Mantém o desktop inalterado.
+   ========================================================= */
+@media (max-width: 768px){
+  /* O arquivo do banner possui margens brancas embutidas.
+     No celular, enquadramos somente a faixa útil sem distorcer a arte. */
+  .hero{
+    height:66px!important;
+    background-size:100% auto!important;
+    background-position:center center!important;
+    background-repeat:no-repeat!important;
+    background-color:#05090c!important;
+    border-bottom:2px solid #8b6500!important;
+  }
+
+  /* Voltar / Visão Geral são redundantes no celular porque a navegação
+     principal já fica fixa na barra inferior. */
+  .platform-actions{
+    display:none!important;
+  }
+
+  /* Aproxima a densidade visual da experiência desktop. */
+  main{padding-top:10px!important}
+  .toolbar{gap:7px!important}
+  .toolbar label{
+    min-height:60px!important;
+    padding:7px 10px!important;
+  }
+  .toolbar select{
+    font-size:14px!important;
+    padding-top:3px!important;
+  }
+  .toolbar .primary{
+    min-height:46px!important;
+    font-size:15px!important;
+  }
+
+  .cards{gap:7px!important}
+  .cards article{
+    min-height:98px!important;
+    padding:10px!important;
+  }
+  .cards strong{font-size:25px!important;margin:7px 0 4px!important}
+  .cards em{font-size:11px!important}
+
+  /* Barra inferior mais limpa, mantendo cinco atalhos visíveis. */
+  aside,aside nav{height:68px!important}
+  .nav{
+    height:68px!important;
+    padding:5px 2px!important;
+  }
+  .nav span{
+    font-size:8.5px!important;
+    line-height:1.08!important;
+  }
+}
+
+@media (max-width: 480px){
+  .hero{
+    height:66px!important;
+    background-size:100% auto!important;
+    background-position:center center!important;
+  }
+  .toolbar label{min-height:58px!important}
+  .cards article{min-height:96px!important}
+}
