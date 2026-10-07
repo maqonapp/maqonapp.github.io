@@ -2,8 +2,8 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MAQON | Painel de Controle V1.4 WhatsApp IA</title>
-<link rel="stylesheet" href="estilo.css?v=146">
+<title>MAQON | Plataforma Comercial V1.5</title>
+<link rel="stylesheet" href="estilo.css?v=150">
 </head>
 <body>
 <header class="hero" aria-label="MAQON — Inteligência em equipamentos pesados"></header>
@@ -23,6 +23,7 @@
     <button class="nav" data-view="manutencao">⌕ <span>Manutenção</span></button>
     <button class="nav" data-view="relatorios">▧ <span>Relatórios</span></button>
     <button class="nav" data-href="maqon-alertas.html">⚠ <span>Central de Alertas</span></button>
+    <button class="nav nav-sales" data-view="contratar">★ <span>Contratar MAQON</span></button>
     <button class="nav" data-view="integracoes">⌘ <span>Integrações</span></button>
     <button class="nav" data-view="config">⚙ <span>Configurações</span></button>
   </nav>
@@ -150,10 +151,50 @@
 <section id="propostas" class="view"><h1>Propostas</h1><article class="panel"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><h2>Gestão de Propostas Comerciais</h2><p><strong id="proposalCount">0</strong> propostas cadastradas • <strong id="proposalSentCount">0</strong> enviadas</p></div><button class="primary" id="newProposal">＋ Nova Proposta</button></div><input id="proposalSearch" placeholder="Pesquisar proposta..." style="min-width:280px;margin:14px 0"><div style="overflow:auto"><table><thead><tr><th>#</th><th>Cliente</th><th>Empresa</th><th>Equipamento</th><th>Modalidade</th><th>Valor</th><th>Validade</th><th>Status</th><th>Ações</th></tr></thead><tbody id="proposalRows"></tbody></table></div></article></section>
 <section id="financeiro" class="view"><h1>Financeiro</h1><article class="panel"><h2>Pipeline Comercial</h2><p>Valores calculados a partir das propostas cadastradas na plataforma.</p><div class="cards compact"><article><span>Valor total</span><strong id="financePipeline">R$ 0,00</strong></article><article><span>Propostas</span><strong id="financeProposalCount">0</strong></article><article><span>Aprovadas</span><strong id="financeApprovedCount">0</strong></article></div></article></section>
 <section id="relatorios" class="view"><h1>Relatórios</h1><article class="panel"><h2>Central de Relatórios</h2><p>Acesse os dados consolidados da operação e utilize a impressão do navegador para gerar PDF quando necessário.</p><div class="modulecards commercial-grid"><article>▥<b>Executivo</b><span>Indicadores gerais e funil comercial.</span><button class="primary module-action" data-report-view="dashboard">Abrir</button></article><article>⌁<b>Técnico</b><span>Análises de equipamentos cadastrados.</span><button class="primary module-action" data-report-view="analises">Abrir</button></article><article>▤<b>Comercial</b><span>Propostas e pipeline de vendas.</span><button class="primary module-action" data-report-view="propostas">Abrir</button></article><article>🖨<b>Exportar</b><span>Imprima a tela atual ou salve em PDF.</span><button class="primary module-action" onclick="window.print()">Imprimir / PDF</button></article></div></article></section>
-<section id="config" class="view"><h1>Configurações</h1><article class="panel"><h2>Dados da plataforma</h2><p><b>Produto:</b> MAQON — Consultoria em Equipamentos Pesados</p><p><b>Contato oficial:</b> maqonapp@gmail.com</p><p><b>Versão:</b> V1.4 Comercial + WhatsApp IA</p><p><b>Armazenamento atual:</b> dados operacionais salvos no navegador deste dispositivo.</p><p><b>Integrações:</b> credenciais externas não ficam expostas nesta página.</p><hr style="border-color:#31434b"><p>Antes da venda em escala/multiusuário, a próxima evolução técnica é autenticação e banco de dados em nuvem.</p></article></section>
+<section id="contratar" class="view sales-view">
+  <div class="sales-hero">
+    <div class="sales-copy">
+      <span class="sales-kicker">MAQON • PLATAFORMA PARA EQUIPAMENTOS PESADOS</span>
+      <h1>Transforme dados de máquinas em decisões comerciais e operacionais melhores.</h1>
+      <p>Centralize leads, equipamentos, análises técnicas, comparativos, propostas e indicadores em uma única plataforma, com acesso pelo computador e celular.</p>
+      <div class="sales-actions">
+        <a class="sales-cta primary" target="_blank" rel="noopener" href="https://wa.me/5598984218479?text=Ol%C3%A1%21%20Quero%20conhecer%20e%20contratar%20a%20plataforma%20MAQON.">Quero contratar a MAQON</a>
+        <a class="sales-secondary" target="_blank" rel="noopener" href="https://wa.me/5598984218479?text=Ol%C3%A1%21%20Gostaria%20de%20agendar%20uma%20demonstra%C3%A7%C3%A3o%20da%20plataforma%20MAQON.">Agendar demonstração</a>
+      </div>
+      <div class="sales-contact">WhatsApp: <b>(98) 98421-8479</b> &nbsp;•&nbsp; E-mail: <b>maqonapp@gmail.com</b></div>
+    </div>
+    <div class="sales-seal"><span>MAQON</span><b>Compare.<br>Calcule.<br>Decida.</b><small>Desktop + Mobile</small></div>
+  </div>
+
+  <div class="sales-grid">
+    <article class="sales-card"><span>01</span><h2>CRM e Funil Comercial</h2><p>Organize leads, origem, responsável, status e avanço comercial em um único fluxo.</p></article>
+    <article class="sales-card"><span>02</span><h2>Gestão de Equipamentos</h2><p>Cadastre máquinas e acompanhe fabricante, modelo, ano, horímetro, valor, consumo, manutenção e disponibilidade.</p></article>
+    <article class="sales-card"><span>03</span><h2>Comparativos e Análises</h2><p>Compare equipamentos lado a lado e gere indicadores técnicos para apoiar compra, venda, locação e operação.</p></article>
+    <article class="sales-card"><span>04</span><h2>Propostas e Pipeline</h2><p>Estruture propostas comerciais e acompanhe o valor do pipeline diretamente na plataforma.</p></article>
+    <article class="sales-card"><span>05</span><h2>Relatórios e Indicadores</h2><p>Visualize dados comerciais e técnicos para apoiar decisões, reuniões e acompanhamento de resultados.</p></article>
+    <article class="sales-card"><span>06</span><h2>Integrações</h2><p>Conecte canais comerciais e utilize a integração já preparada com HubSpot, além da evolução para WhatsApp e Meta.</p></article>
+  </div>
+
+  <article class="sales-offer">
+    <div>
+      <span class="sales-kicker">CONDIÇÃO COMERCIAL</span>
+      <h2>Contratação sob proposta comercial</h2>
+      <p>A configuração pode ser ajustada ao porte da operação, quantidade de usuários e nível de implantação necessário. Solicite a proposta para receber a condição adequada à sua empresa.</p>
+    </div>
+    <a class="sales-cta primary" target="_blank" rel="noopener" href="https://wa.me/5598984218479?text=Ol%C3%A1%21%20Quero%20receber%20uma%20proposta%20comercial%20da%20MAQON.">Solicitar proposta comercial</a>
+  </article>
+
+  <div class="sales-steps">
+    <article><b>1</b><h3>Demonstração</h3><p>Apresentamos a plataforma e entendemos sua necessidade.</p></article>
+    <article><b>2</b><h3>Proposta</h3><p>Definimos escopo, usuários e condição comercial.</p></article>
+    <article><b>3</b><h3>Ativação</h3><p>Configuramos o ambiente e iniciamos o uso da MAQON.</p></article>
+  </div>
+</section>
+
+<section id="config" class="view"><h1>Configurações</h1><article class="panel"><h2>Dados da plataforma</h2><p><b>Produto:</b> MAQON — Consultoria em Equipamentos Pesados</p><p><b>Contato oficial:</b> maqonapp@gmail.com</p><p><b>Versão:</b> V1.5 Lançamento Comercial</p><p><b>Armazenamento atual:</b> dados operacionais salvos no navegador deste dispositivo.</p><p><b>Integrações:</b> credenciais externas não ficam expostas nesta página.</p><hr style="border-color:#31434b"><p>Antes da venda em escala/multiusuário, a próxima evolução técnica é autenticação e banco de dados em nuvem.</p></article></section>
 </main>
 
-<footer><b>MAQON</b><span class="foot-left">CONSULTORIA EM EQUIPAMENTOS PESADOS　|　✉ maqonapp@gmail.com　|　PLANEJAMENTO　|　ANÁLISE　|　CUSTO-BENEFÍCIO　|　DISPONIBILIDADE　|　PRODUTIVIDADE　|　SEGURANÇA</span><span class="foot-right">Máquinas em movimento. Resultados para você.　 <strong>V1.4</strong>　● Online</span></footer>
+<footer><b>MAQON</b><span class="foot-left">CONSULTORIA EM EQUIPAMENTOS PESADOS　|　✉ maqonapp@gmail.com　|　PLANEJAMENTO　|　ANÁLISE　|　CUSTO-BENEFÍCIO　|　DISPONIBILIDADE　|　PRODUTIVIDADE　|　SEGURANÇA</span><span class="foot-right">Máquinas em movimento. Resultados para você.　 <strong>V1.5</strong>　● Online</span></footer>
 
 <dialog id="leadDialog" class="lead-dialog"><form id="leadForm"><h2 id="leadDialogTitle">Novo Lead</h2>
 <div class="lead-grid">
