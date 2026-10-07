@@ -399,3 +399,50 @@ aside .sidebrand {
   .toolbar label{min-height:58px!important}
   .cards article{min-height:96px!important}
 }
+
+
+/* =========================================================
+   MAQON V1.4.5 — MOBILE FINAL
+   Correção definitiva baseada nos arquivos reais do GitHub.
+   - usa banner mobile sem faixas brancas
+   - remove ações redundantes Voltar / Visão Geral no celular
+   - mantém desktop e integrações inalterados
+   ========================================================= */
+@media (max-width: 768px){
+  .platform-actions{
+    display:none!important;
+    visibility:hidden!important;
+    height:0!important;
+    min-height:0!important;
+    max-height:0!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:hidden!important;
+  }
+
+  .hero{
+    margin-left:0!important;
+    width:100%!important;
+    height:112px!important;
+    background-image:url('maqon-banner-v4-mobile.png')!important;
+    background-size:cover!important;
+    background-position:center center!important;
+    background-repeat:no-repeat!important;
+    background-color:#05090c!important;
+    border-bottom:2px solid #8b6500!important;
+  }
+
+  main{
+    margin-left:0!important;
+    padding-top:8px!important;
+  }
+}
+
+@media (max-width: 480px){
+  .hero{
+    height:104px!important;
+    background-image:url('maqon-banner-v4-mobile.png')!important;
+    background-size:cover!important;
+    background-position:center center!important;
+  }
+}
