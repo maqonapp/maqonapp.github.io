@@ -1,5 +1,5 @@
-/* MAQON V1.5.10 - Relatorios tecnicos PDF (sem dependencias externas).
-   Nao altera cadastros, CRM, comparativos, analises ou biblioteca.
+/* MAQON V1.5.11 - Relatorios executivos premium PDF (sem dependencias externas).
+   Preserva cadastros, CRM, comparativos, analises e biblioteca.
    Le os equipamentos ja salvos no navegador e gera PDFs A4 localmente. */
 (function () {
   'use strict';
@@ -156,36 +156,6 @@
     }
   }
 
-  function header(p, doc, title, subtitle, pageNo, total) {
-    p.rect(0, 0, W, 113, C.black);
-    p.rect(0, 110, W, 4, C.gold);
-    if (doc.logo) p.image(36, 20, 213, 87);
-    else { p.text('MAQON', 38, 28, 34, true, C.gold); p.text('CONSULTORIA EM EQUIPAMENTOS PESADOS', 40, 72, 9, true, C.white); }
-    p.text('RELATÓRIO TÉCNICO', 282, 32, 15, true, C.gold, 272);
-    p.paragraph(title + '  |  ' + subtitle, 282, 57, 265, 9, C.white, 12, 3);
-    p.text('Emitido em ' + stamp(), 282, 93, 8, false, C.white);
-    p.line(M, 811, W - M, 811, C.line);
-    p.text('MAQON  |  Consultoria em Equipamentos Pesados  |  maqonapp@gmail.com', M, 817, 7.2, false, C.muted, 475);
-    p.text(pageNo + ' / ' + total, W - 62, 817, 7.5, true, C.muted);
-  }
-  function section(p, label, y) {
-    p.rect(M, y + 2, 4, 16, C.gold);
-    p.text(label, M + 13, y, 12, true, C.dark, W - 2 * M - 14);
-    p.line(M, y + 24, W - M, y + 24, C.line);
-  }
-  function rowTable(p, cells, y, widths, h, index) {
-    if (index % 2 === 0) p.rect(M, y, W - 2 * M, h, C.light);
-    let x = M + 8;
-    cells.forEach((cell, j) => {
-      const w = widths[j];
-      const size = j === 0 ? 8.1 : 7.7;
-      const lines = linesFor(cell, w - 14, size, j === 0);
-      const top = y + (lines.length > 1 ? 4 : (h - size) / 2 - 1);
-      lines.slice(0, 2).forEach((line, i) => p.text(line, x, top + i * 9, size, j === 0, j === 0 ? C.dark : C.text, w - 14));
-      x += w;
-    });
-    p.line(M, y + h, W - M, y + h, C.line, .35);
-  }
   function valueCell(x, k) {
     switch (k) {
       case 0: return category(x);
@@ -210,118 +180,253 @@
     const available = data.filter(x => isMeasured(x, k));
     return available.length ? available.reduce((a, b) => (low ? num(a[k]) <= num(b[k]) : num(a[k]) >= num(b[k])) ? a : b) : null;
   }
-  function note(p, text, y, h) {
-    p.rect(M, y, W - 2 * M, h, C.light);
-    p.rect(M, y, 3, h, C.gold);
-    p.paragraph(text, M + 12, y + 9, W - 2 * M - 24, 8.2, C.text, 11.6, Math.floor((h - 13) / 11.6));
+  // MAQON V1.5.11 — layout executivo A4, gerado localmente.
+  const P = {
+    cream: [0.985, 0.981, 0.961], paleGold: [0.992, 0.955, 0.845],
+    faint: [0.965, 0.970, 0.970], slate: [0.31, 0.38, 0.42],
+    graphite: [0.085, 0.125, 0.15], green: [0.22, 0.45, 0.35]
+  };
+  function currentMeta(meta) {
+    const m = meta || {}, date = m.date ? new Date(m.date) : new Date();
+    return {client: String(m.client || '').trim(), responsible: String(m.responsible || '').trim(),
+      demo: m.demo === true, date: Number.isFinite(date.getTime()) ? date : new Date()};
   }
-  function chart(p, title, data, idx, low, y, format) {
-    p.text(title, M, y, 10.5, true, C.dark);
-    p.text(low ? 'Menor é melhor' : 'Maior é melhor', W - M - 108, y + 1, 7.5, false, C.muted);
-    const vals = data.map(x => isMeasured(x, idx) ? num(x[idx]) : null);
-    const available = vals.filter(v => v !== null);
-    const high = Math.max(...available, 1), lowVal = available.length ? Math.min(...available) : 0;
-    data.forEach((x, i) => {
-      const yy = y + 22 + i * 26;
-      const measured = vals[i] !== null;
-      const leader = measured && (low ? vals[i] === lowVal : vals[i] === high);
-      p.text(name(x), M + 2, yy, 8.5, leader, C.text, 157);
-      p.rect(M + 170, yy + 3, 211, 9, C.light);
-      if (measured) p.rect(M + 170, yy + 3, Math.max(3, 211 * (vals[i] / high)), 9, leader ? C.gold : C.bar);
-      p.text(measured ? format(x[idx]) : 'Sem dados', M + 392, yy, 8.5, leader, C.text, 125);
-    });
+  function dateLocal(d) { return d.toLocaleDateString('pt-BR'); }
+  function dateFile(d) { return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-'); }
+  function reportId(meta, suffix) {
+    const d = meta.date;
+    return 'MAQ-' + dateFile(d).replace(/-/g, '') + '-' + String(d.getHours()).padStart(2, '0') + String(d.getMinutes()).padStart(2, '0') + '-' + suffix;
   }
-  function comparisonReport(data, logo) {
-    const doc = new PDF(logo), p = doc.page();
-    header(p, doc, 'COMPARATIVO', data.length + ' equipamentos selecionados', 1, 2);
-    section(p, 'EQUIPAMENTOS ANALISADOS', 134);
-    const gap = 9, boxW = (W - 2 * M - (data.length - 1) * gap) / data.length;
-    data.forEach((x, i) => {
-      const bx = M + i * (boxW + gap);
-      p.rect(bx, 169, boxW, 77, C.light);
-      p.rect(bx, 169, boxW, 3, C.gold);
-      p.text(name(x), bx + 8, 180, 10.5, true, C.dark, boxW - 16);
-      p.paragraph(category(x), bx + 8, 197, boxW - 16, 8.1, C.muted, 11, 2);
-      p.text('Ano: ' + safe(x[3]) + '  |  ' + decimal(x[4], 0) + ' h', bx + 8, 228, 8, false, C.text, boxW - 16);
-    });
-    section(p, 'QUADRO COMPARATIVO', 263);
-    const widths = [130, ...data.map(() => (W - 2 * M - 130) / data.length)];
-    const headings = ['Indicador', ...data.map(x => name(x))];
-    const headY = 296;
-    p.rect(M, headY, W - 2 * M, 29, C.dark);
-    let xx = M + 8;
-    headings.forEach((h, i) => { p.paragraph(h, xx, headY + 6, widths[i] - 13, 7.8, C.white, 10, 2, true); xx += widths[i]; });
-    const specs = [['Categoria',0],['Fabricante',1],['Modelo',2],['Ano',3],['Horímetro',4],['Valor de compra',5],['Consumo',6],['Manutenção por hora',7],['Disponibilidade',8],['Situação',9],['Score MAQON (indicativo)',10]];
-    specs.forEach(([label, idx], i) => rowTable(p, [label, ...data.map(x => valueCell(x, idx))], headY + 29 + i * 25, widths, 25, i));
-    section(p, 'DESTAQUES DO COMPARATIVO', 614);
-    const conclusions = [
-      ['Menor investimento inicial', best(data, 5, true), x => money(x[5])],
-      ['Menor consumo informado', best(data, 6, true), x => decimal(x[6], 1) + ' L/h'],
-      ['Menor manutenção informada', best(data, 7, true), x => money(x[7]) + '/h'],
-      ['Maior disponibilidade', best(data, 8, false), x => decimal(x[8], 1) + '%']
+  function header(p, doc, kind, subtitle, meta, pageNo, total, suffix) {
+    p.rect(0, 0, W, 127, C.black);
+    p.rect(0, 123, W, 4, C.gold);
+    p.rect(W - 11, 0, 11, 123, C.gold);
+    if (doc.logo) p.image(33, 22, 194, 79); // proporção original preservada (355:145)
+    else { p.text('MAQON', 38, 31, 36, true, C.gold); p.text('CONSULTORIA EM EQUIPAMENTOS PESADOS', 40, 81, 8, true, C.white); }
+    p.text('RELATÓRIO EXECUTIVO', 251, 20, 10, true, C.gold, 305);
+    p.text(kind, 251, 39, 17.3, true, C.white, 310);
+    p.text(subtitle, 252, 67, 8.4, false, C.white, 298);
+    p.text('EMISSÃO ' + dateLocal(meta.date), 252, 90, 7.6, true, C.gold, 125);
+    p.text(reportId(meta, suffix), 379, 90, 7.3, false, C.white, 174);
+    if (meta.demo) {
+      p.rect(252, 106, 205, 13, P.paleGold);
+      p.text('DADOS FICTÍCIOS - DEMONSTRAÇÃO', 257, 107, 7.2, true, C.dark, 195);
+    }
+    p.line(M, 809, W - M, 809, C.line, .7);
+    p.text('MAQON  |  Consultoria em Equipamentos Pesados  |  maqonapp@gmail.com', M, 815, 7.1, false, C.muted, 459);
+    p.text(String(pageNo).padStart(2, '0') + ' / ' + String(total).padStart(2, '0'), W - 71, 815, 8.1, true, C.dark, 39);
+  }
+  function infoStrip(p, meta) {
+    const y = 139, h = 42, total = W - 2 * M, third = total / 3;
+    p.rect(M, y, total, h, C.light);
+    p.rect(M, y, 4, h, C.gold);
+    const entries = [
+      ['CLIENTE / EMPRESA', meta.client || 'Não informado'],
+      ['ELABORAÇÃO', meta.responsible || 'Equipe MAQON'],
+      ['REFERÊNCIA', meta.demo ? 'Demonstração' : 'Dados cadastrados']
     ];
-    conclusions.forEach(([label, x, format], i) => {
-      const yy = 648 + i * 31;
-      p.rect(M, yy + 1, 5, 17, C.gold);
-      p.text(label + ':', M + 12, yy, 9, true, C.dark, 183);
-      p.text(x ? name(x) + ' (' + format(x) + ')' : 'Dados não informados', M + 190, yy, 9, false, C.text, W - 2 * M - 198);
+    entries.forEach(([label, value], i) => {
+      const x = M + i * third + 12;
+      p.text(label, x, y + 7, 7, true, C.muted, third - 17);
+      p.text(value, x, y + 20, 9.1, true, C.dark, third - 19);
+      if (i) p.line(M + i * third, y + 8, M + i * third, y + h - 8, C.line, .6);
     });
-    p.text('* Score indicativo: metodologia ainda não validada para decisão de compra.', M, 786, 7.4, false, C.muted, 518);
+  }
+  function section(p, title, y, kicker) {
+    p.rect(M, y + 1, 4, 17, C.gold);
+    p.text(title, M + 12, y, 11.2, true, C.dark, W - 2 * M - 15);
+    if (kicker) p.text(kicker, W - M - 155, y + 3, 7.4, false, C.muted, 154);
+    p.line(M, y + 24, W - M, y + 24, C.line, .65);
+  }
+  function metricCard(p, x, y, w, h, label, value, detail) {
+    p.rect(x, y, w, h, C.light);
+    p.rect(x, y, w, 4, C.gold);
+    p.text(label, x + 9, y + 12, 7.2, true, C.muted, w - 18);
+    p.text(value, x + 9, y + 29, 12.8, true, C.dark, w - 18);
+    p.text(detail, x + 9, y + 55, 7.7, false, C.slate || P.slate, w - 18);
+  }
+  function dataPresent(x, idx) { return isMeasured(x, idx); }
+  function fmtIf(x, idx, formatter) { return dataPresent(x, idx) ? formatter(x[idx]) : 'Não informado'; }
+  function equipmentCard(p, x, y, w, h, item, i) {
+    p.rect(x, y, w, h, C.light);
+    p.rect(x, y, 4, h, C.gold);
+    p.text('EQUIPAMENTO ' + String(i + 1).padStart(2, '0'), x + 11, y + 8, 7, true, C.muted, w - 18);
+    p.text(name(item), x + 11, y + 21, 11.2, true, C.dark, w - 20);
+    p.text(category(item), x + 11, y + 39, 7.8, false, C.muted, w - 20);
+    p.text('ANO ' + safe(item[3]) + '   •   ' + fmtIf(item, 4, v => decimal(v, 0) + ' h'), x + 11, y + h - 15, 7.6, true, C.dark, w - 20);
+  }
+  function bestValues(data) {
+    return {value: best(data, 5, true), consumption: best(data, 6, true), maintenance: best(data, 7, true), availability: best(data, 8, false)};
+  }
+  function reportComparison(data, logo, rawMeta) {
+    const meta = currentMeta(rawMeta), doc = new PDF(logo), b = bestValues(data);
+    const p = doc.page();
+    header(p, doc, 'COMPARATIVO TÉCNICO', data.length + ' máquinas | análise comparativa de indicadores', meta, 1, 2, 'CMP');
+    infoStrip(p, meta);
+    section(p, 'SÍNTESE EXECUTIVA', 191);
+    const mGap = 8, mW = (W - 2 * M - 3 * mGap) / 4;
+    [
+      ['MENOR INVESTIMENTO', b.value ? money(b.value[5]) : 'Sem dados', b.value ? name(b.value) : 'Sem referência'],
+      ['MENOR CONSUMO', b.consumption ? decimal(b.consumption[6], 1) + ' L/h' : 'Sem dados', b.consumption ? name(b.consumption) : 'Sem referência'],
+      ['MENOR MANUTENÇÃO', b.maintenance ? money(b.maintenance[7]) + '/h' : 'Sem dados', b.maintenance ? name(b.maintenance) : 'Sem referência'],
+      ['MAIOR DISPONIBILIDADE', b.availability ? decimal(b.availability[8], 1) + '%' : 'Sem dados', b.availability ? name(b.availability) : 'Sem referência']
+    ].forEach((m, i) => metricCard(p, M + i * (mW + mGap), 221, mW, 73, ...m));
+    section(p, 'EQUIPAMENTOS AVALIADOS', 305);
+    const eGap = 9, eW = (W - 2 * M - (data.length - 1) * eGap) / data.length;
+    data.forEach((x, i) => equipmentCard(p, M + i * (eW + eGap), 335, eW, 72, x, i));
+    section(p, 'QUADRO COMPARATIVO', 419, 'Dados do cadastro');
+    const top = 450, headH = 27, widths = [130, ...data.map(() => (W - 2 * M - 130) / data.length)];
+    p.rect(M, top, W - 2 * M, headH, C.dark);
+    let px = M + 9;
+    ['INDICADOR', ...data.map(x => name(x))].forEach((label, i) => {
+      p.text(label, px, top + 8, 7.8, true, C.white, widths[i] - 15); px += widths[i];
+    });
+    const specs = [
+      ['Fabricante', 1], ['Modelo', 2], ['Ano', 3], ['Horímetro', 4],
+      ['Valor de compra', 5], ['Consumo', 6], ['Manutenção por hora', 7],
+      ['Disponibilidade', 8], ['Situação', 9], ['Score MAQON*', 10]
+    ];
+    const rowH = 23.8;
+    specs.forEach(([label, idx], i) => {
+      const yy = top + headH + i * rowH;
+      if (i % 2 === 0) p.rect(M, yy, W - 2 * M, rowH, C.light);
+      p.text(label, M + 9, yy + 6.5, 8.1, true, C.dark, widths[0] - 17);
+      let cx = M + widths[0];
+      data.forEach(x => {
+        const bw = widths[1];
+        const winner = idx === 5 ? b.value === x : idx === 6 ? b.consumption === x : idx === 7 ? b.maintenance === x : idx === 8 ? b.availability === x : false;
+        if (winner) p.rect(cx + 2, yy + 3, bw - 4, rowH - 6, P.paleGold);
+        p.text(valueCell(x, idx), cx + 7, yy + 6.5, 7.8, !!winner, winner ? C.dark : C.text, bw - 13);
+        cx += bw;
+      });
+      p.line(M, yy + rowH, W - M, yy + rowH, C.line, .28);
+    });
+    p.rect(M, 730, W - 2 * M, 68, P.cream);
+    p.rect(M, 730, 4, 68, C.gold);
+    p.text('LEITURA RESPONSÁVEL', M + 12, 739, 8.4, true, C.dark);
+    p.paragraph('Destaques calculados exclusivamente a partir dos valores cadastrados. O menor preço ou consumo não determina, isoladamente, a melhor compra. Score MAQON indicativo, sem validação técnica conclusiva. Consulte os gráficos e premissas na página 2.', M + 12, 754, W - 2 * M - 24, 8.1, C.text, 11.3, 4);
 
     const p2 = doc.page();
-    header(p2, doc, 'INDICADORES E CONCLUSÕES', 'Comparativo gráfico e parecer preliminar', 2, 2);
-    section(p2, 'GRÁFICOS DOS INDICADORES', 133);
-    chart(p2, 'Valor de compra (R$)', data, 5, true, 168, money);
-    chart(p2, 'Consumo informado (L/h)', data, 6, true, 283, v => decimal(v, 1) + ' L/h');
-    chart(p2, 'Manutenção informada (R$/h)', data, 7, true, 398, v => money(v) + '/h');
-    chart(p2, 'Disponibilidade (%)', data, 8, false, 513, v => decimal(v, 1) + '%');
-    section(p2, 'CONCLUSÃO TÉCNICA PRELIMINAR', 630);
-    const c1 = best(data, 5, true), c2 = best(data, 6, true), c3 = best(data, 7, true), c4 = best(data, 8, false);
-    const observations = [
-      c1 ? name(c1) + ' tem o menor investimento inicial' : null,
-      c3 ? name(c3) + ' tem a menor manutenção informada' : null,
-      c2 ? name(c2) + ' tem o menor consumo informado' : null,
-      c4 ? name(c4) + ' tem a maior disponibilidade informada' : null
+    header(p2, doc, 'INDICADORES E PARECER', 'Visualização comparativa | leitura orientada à decisão', meta, 2, 2, 'CMP');
+    infoStrip(p2, meta);
+    section(p2, 'PAINEL GRÁFICO', 191, 'Destaque em dourado');
+    chartPanel(p2, M, 223, 252, 181, 'VALOR DE COMPRA', 'Menor é melhor', data, 5, true, v => money(v));
+    chartPanel(p2, M + 269, 223, 252, 181, 'CONSUMO INFORMADO', 'Menor é melhor', data, 6, true, v => decimal(v, 1) + ' L/h');
+    chartPanel(p2, M, 417, 252, 181, 'MANUTENÇÃO POR HORA', 'Menor é melhor', data, 7, true, v => money(v) + '/h');
+    chartPanel(p2, M + 269, 417, 252, 181, 'DISPONIBILIDADE', 'Maior é melhor', data, 8, false, v => decimal(v, 1) + '%');
+    section(p2, 'CONCLUSÃO TÉCNICA PRELIMINAR', 614);
+    p2.rect(M, 647, W - 2 * M, 79, C.light);
+    p2.rect(M, 647, 4, 79, C.gold);
+    const statements = [
+      b.value ? name(b.value) + ' apresenta o menor investimento inicial' : null,
+      b.consumption ? name(b.consumption) + ' apresenta o menor consumo informado' : null,
+      b.maintenance ? name(b.maintenance) + ' apresenta a menor manutenção informada' : null,
+      b.availability ? name(b.availability) + ' apresenta a maior disponibilidade' : null
     ].filter(Boolean);
-    const conclusion = (observations.length ? observations.join('; ') + '. ' : 'Indicadores numéricos não informados. ') +
-      'Não é possível definir a melhor compra sem produtividade, aplicação, combustível monetizado e custo total de propriedade.';
-    p2.paragraph(conclusion, M + 2, 662, W - 2 * M - 4, 9.1, C.text, 13, 5);
-    note(p2, 'PREMISSAS: valores informados no cadastro, não auditados. Comparação descritiva, não equivale a ensaio de campo. O custo total não inclui combustível em R$, operador, depreciação, pneus/rodante, seguros, transporte e tributos. Score MAQON: indicador heurístico em revisão.', 735, 67);
+    p2.paragraph((statements.length ? statements.join('; ') + '. ' : 'Dados insuficientes para identificar destaques. ') + 'A melhor alternativa depende da aplicação, da produtividade real e do custo total de propriedade.', M + 13, 659, W - 2 * M - 26, 9, C.dark, 12.6, 5);
+    p2.rect(M, 738, W - 2 * M, 61, P.cream);
+    p2.rect(M, 738, 4, 61, C.gold);
+    p2.text('PREMISSAS E PRÓXIMAS VERIFICAÇÕES', M + 12, 745, 8.1, true, C.dark);
+    p2.paragraph('Valores fornecidos pelo cadastro, sem auditoria ou ensaio de campo. Não foram monetizados combustível, depreciação, operador, pneus/rodante, seguros, tributos e logística. Antes de decidir, valide aplicação, produção por hora, horas anuais, preço do diesel e histórico de manutenção.', M + 12, 760, W - 2 * M - 24, 8.1, C.text, 10.5, 4);
     return doc.build();
   }
-  function individualReport(x, logo) {
-    const doc = new PDF(logo), p = doc.page();
-    header(p, doc, 'ANÁLISE INDIVIDUAL', name(x) + ' - ' + category(x), 1, 1);
-    section(p, 'IDENTIFICAÇÃO DO EQUIPAMENTO', 134);
-    p.text(name(x), M + 2, 170, 18, true, C.dark, W - 2 * M - 4);
-    p.paragraph(category(x), M + 2, 195, W - 2 * M - 4, 10, C.muted, 13, 2);
-    const metrics = [
-      ['MANUTENÇÃO INFORMADA', money(x[7]) + '/h'],
-      ['DISPONIBILIDADE', decimal(x[8], 1) + '%'],
-      ['SCORE MAQON*', score(x) + '/100']
-    ];
-    const gap = 9, bw = (W - 2 * M - 2 * gap) / 3;
-    metrics.forEach(([label, value], i) => {
-      const bx = M + i * (bw + gap);
-      p.rect(bx, 239, bw, 77, C.dark);
-      p.rect(bx, 239, bw, 4, C.gold);
-      p.text(label, bx + 10, 252, 8, true, C.white, bw - 20);
-      p.text(value, bx + 10, 273, 17, true, C.gold, bw - 20);
+  function chartPanel(p, x, y, w, h, title, direction, data, idx, low, formatter) {
+    p.rect(x, y, w, h, C.light);
+    p.rect(x, y, w, 4, C.gold);
+    p.text(title, x + 12, y + 12, 10, true, C.dark, w - 24);
+    p.text(direction, x + 12, y + 30, 7.8, false, C.muted, w - 24);
+    const nums = data.map(d => dataPresent(d, idx) ? num(d[idx]) : null);
+    const available = nums.filter(v => v !== null), maximum = Math.max(1, ...available);
+    const bestN = available.length ? (low ? Math.min(...available) : Math.max(...available)) : null;
+    data.forEach((d, i) => {
+      const yy = y + 55 + i * 38;
+      const leader = nums[i] !== null && nums[i] === bestN;
+      p.text(name(d), x + 12, yy, 8.3, leader, C.dark, 125);
+      p.text(nums[i] === null ? 'Não informado' : formatter(d[idx]), x + 145, yy, 8.1, leader, C.dark, w - 155);
+      p.rect(x + 12, yy + 18, w - 24, 8, C.line);
+      if (nums[i] !== null) p.rect(x + 12, yy + 18, Math.max(3, (w - 24) * nums[i] / maximum), 8, leader ? C.gold : C.bar);
     });
-    section(p, 'DADOS TÉCNICOS CADASTRADOS', 336);
-    const specs = [['Categoria', category(x)],['Fabricante',safe(x[1])],['Modelo',safe(x[2])],['Ano',safe(x[3])],['Horímetro',decimal(x[4],0) + ' h'],['Valor de compra',money(x[5])],['Consumo informado',decimal(x[6],1) + ' L/h'],['Manutenção informada',money(x[7]) + '/h'],['Disponibilidade',decimal(x[8],1) + '%'],['Situação',safe(x[9])]];
-    specs.forEach(([label, value], i) => rowTable(p, [label, value], 369 + i * 23, [200, W - 2 * M - 200], 23, i));
-    section(p, 'PARECER TÉCNICO PRELIMINAR', 613);
-    const sc = score(x), level = sc >= 85 ? 'elevado' : sc >= 70 ? 'consistente' : sc >= 55 ? 'intermediário' : 'que exige atenção';
-    const summary = name(x) + ' possui disponibilidade informada de ' + decimal(x[8],1) +
-      '%, consumo de ' + decimal(x[6],1) + ' L/h e manutenção de ' + money(x[7]) +
-      '/h. O Score MAQON indicativo é ' + sc + '/100 (desempenho ' + level +
-      '). O custo operacional total não pode ser calculado com os dados disponíveis.';
-    p.paragraph(summary, M + 2, 646, W - 2 * M - 4, 9.1, C.text, 13, 5);
-    note(p, 'METODOLOGIA E LIMITAÇÕES: score heurístico calculado a partir de disponibilidade (35%), consumo (20%), manutenção (20%), horímetro (10%) e idade (15%). Pesos e normalizações não foram validados tecnicamente. Não inclui combustível em R$, depreciação, operador, pneus/rodante, seguros ou produtividade. Não constitui laudo pericial ou recomendação definitiva.', 724, 77);
+  }
+  function progressPanel(p, x, y, w, h, label, val, sublabel, validated, unit) {
+    p.rect(x, y, w, h, C.light);
+    p.rect(x, y, w, 4, C.gold);
+    p.text(label, x + 13, y + 14, 8.8, true, C.dark, w - 25);
+    p.text(val + (unit || '%'), x + 13, y + 33, 24, true, C.dark, w - 25);
+    p.rect(x + 13, y + 70, w - 26, 9, C.line);
+    p.rect(x + 13, y + 70, Math.max(2, (w - 26) * Math.max(0, Math.min(100, val)) / 100), 9, C.gold);
+    p.text(sublabel, x + 13, y + 88, 7.6, false, validated ? C.muted : P.slate, w - 26);
+  }
+  function numericPanel(p, x, y, w, h, label, val, sublabel) {
+    p.rect(x, y, w, h, P.cream);
+    p.rect(x, y, 4, h, C.gold);
+    p.text(label, x + 13, y + 13, 8.7, true, C.muted, w - 25);
+    p.text(val, x + 13, y + 32, 20, true, C.dark, w - 25);
+    p.text(sublabel, x + 13, y + 72, 7.8, false, C.muted, w - 25);
+  }
+  function reportIndividual(x, logo, rawMeta) {
+    const meta = currentMeta(rawMeta), doc = new PDF(logo), p = doc.page();
+    header(p, doc, 'ANÁLISE INDIVIDUAL', 'Indicadores cadastrados | parecer técnico preliminar', meta, 1, 2, 'IND');
+    infoStrip(p, meta);
+    p.text('EQUIPAMENTO AVALIADO', M, 195, 8.1, true, C.muted);
+    p.text(name(x), M, 214, 22, true, C.dark, W - 2 * M);
+    p.text(category(x), M, 247, 10.4, false, C.muted, W - 2 * M);
+    section(p, 'INDICADORES PRINCIPAIS', 274);
+    const mGap = 8, mW = (W - 2 * M - 3 * mGap) / 4;
+    [
+      ['INVESTIMENTO', fmtIf(x, 5, money), 'Valor cadastrado'],
+      ['CONSUMO', fmtIf(x, 6, v => decimal(v, 1) + ' L/h'), 'Dado informado'],
+      ['MANUTENÇÃO', fmtIf(x, 7, v => money(v) + '/h'), 'Custo parcial'],
+      ['DISPONIBILIDADE', fmtIf(x, 8, v => decimal(v, 1) + '%'), 'Dado informado']
+    ].forEach((m, i) => metricCard(p, M + i * (mW + mGap), 307, mW, 76, ...m));
+    section(p, 'FICHA TÉCNICA DO CADASTRO', 401);
+    const specs = [
+      ['Categoria', category(x)], ['Fabricante', safe(x[1])], ['Modelo', safe(x[2])],
+      ['Ano', safe(x[3])], ['Horímetro', fmtIf(x, 4, v => decimal(v, 0) + ' h')],
+      ['Valor de compra', fmtIf(x, 5, money)], ['Consumo informado', fmtIf(x, 6, v => decimal(v, 1) + ' L/h')],
+      ['Manutenção informada', fmtIf(x, 7, v => money(v) + '/h')],
+      ['Disponibilidade', fmtIf(x, 8, v => decimal(v, 1) + '%')], ['Situação', safe(x[9])]
+    ];
+    p.rect(M, 433, W - 2 * M, 25, C.dark);
+    p.text('CAMPO', M + 12, 441, 8, true, C.white);
+    p.text('VALOR INFORMADO', M + 222, 441, 8, true, C.white);
+    specs.forEach(([key, val], i) => {
+      const yy = 458 + i * 24;
+      if (i % 2 === 0) p.rect(M, yy, W - 2 * M, 24, C.light);
+      p.text(key, M + 12, yy + 6.5, 8.4, true, C.dark, 190);
+      p.text(val, M + 222, yy + 6.5, 8.5, false, C.text, W - 2 * M - 234);
+      p.line(M, yy + 24, W - M, yy + 24, C.line, .3);
+    });
+    section(p, 'LEITURA EXECUTIVA', 713);
+    p.paragraph('O cadastro apresenta disponibilidade de ' + fmtIf(x, 8, v => decimal(v, 1) + '%') + ', consumo de ' + fmtIf(x, 6, v => decimal(v, 1) + ' L/h') + ' e manutenção informada de ' + fmtIf(x, 7, v => money(v) + '/h') + '. Os indicadores são descritivos e dependem de validação operacional.', M + 2, 746, W - 2 * M - 4, 8.7, C.text, 12, 4);
+
+    const p2 = doc.page();
+    header(p2, doc, 'PARECER E METODOLOGIA', name(x) + ' | análise individual', meta, 2, 2, 'IND');
+    infoStrip(p2, meta);
+    section(p2, 'PAINEL DE INDICADORES', 191);
+    const half = (W - 2 * M - 12) / 2;
+    progressPanel(p2, M, 224, half, 111, 'DISPONIBILIDADE INFORMADA', num(x[8]), 'Percentual do cadastro', true);
+    progressPanel(p2, M + half + 12, 224, half, 111, 'SCORE MAQON (INDICATIVO)', score(x), 'Heurística não validada', false, '/100');
+    numericPanel(p2, M, 348, half, 105, 'CONSUMO INFORMADO', fmtIf(x, 6, v => decimal(v, 1) + ' L/h'), 'Sem referência de produção por hora');
+    numericPanel(p2, M + half + 12, 348, half, 105, 'MANUTENÇÃO POR HORA', fmtIf(x, 7, v => money(v) + '/h'), 'Não representa custo operacional total');
+    section(p2, 'PARECER TÉCNICO PRELIMINAR', 471);
+    const sc = score(x), level = sc >= 85 ? 'elevada' : sc >= 70 ? 'consistente' : sc >= 55 ? 'intermediária' : 'que requer atenção';
+    const text = name(x) + ' apresenta disponibilidade cadastrada de ' + fmtIf(x, 8, v => decimal(v, 1) + '%') + ', consumo de ' + fmtIf(x, 6, v => decimal(v, 1) + ' L/h') + ' e custo de manutenção informado de ' + fmtIf(x, 7, v => money(v) + '/h') + '. O Score MAQON é ' + sc + '/100, classificação heurística ' + level + '. Sem dados de produtividade e custo total não é possível recomendar a compra de forma conclusiva.';
+    p2.paragraph(text, M + 2, 506, W - 2 * M - 4, 9.2, C.text, 13.2, 6);
+    section(p2, 'VERIFICAÇÕES ANTES DA DECISÃO', 596);
+    p2.rect(M, 627, half, 100, C.light);
+    p2.rect(M, 627, 4, 100, C.gold);
+    p2.text('OPERAÇÃO E DESEMPENHO', M + 12, 638, 8.6, true, C.dark, half - 24);
+    p2.paragraph('Aplicação e material; produção por hora; ciclos; condições do terreno; histórico de falhas; disponibilidade real e manutenção preventiva.', M + 12, 658, half - 24, 8.4, C.text, 11.5, 5);
+    p2.rect(M + half + 12, 627, half, 100, C.light);
+    p2.rect(M + half + 12, 627, 4, 100, C.gold);
+    p2.text('CUSTOS E VIABILIDADE', M + half + 24, 638, 8.6, true, C.dark, half - 24);
+    p2.paragraph('Preço do combustível; horas anuais; operador; pneus/rodante; depreciação; seguro; transporte; tributos e valor residual.', M + half + 24, 658, half - 24, 8.4, C.text, 11.5, 5);
+    p2.rect(M, 740, W - 2 * M, 59, P.cream);
+    p2.rect(M, 740, 4, 59, C.gold);
+    p2.text('LIMITAÇÕES E METODOLOGIA', M + 12, 747, 8.1, true, C.dark);
+    p2.paragraph('Score heurístico: disponibilidade 35%, consumo 20%, manutenção 20%, horímetro 10% e idade 15%. Pesos e normalizações não validados. Valores do cadastro não auditados; este documento não é laudo pericial nem recomendação definitiva.', M + 12, 762, W - 2 * M - 24, 8, C.text, 10.6, 4);
     return doc.build();
   }
-
   async function loadLogo() {
     return new Promise(resolve => {
       const img = new Image();
@@ -332,7 +437,7 @@
           const ctx = canvas.getContext('2d');
           ctx.fillStyle = '#0e1417'; ctx.fillRect(0, 0, canvas.width, canvas.height);
           ctx.drawImage(img, 0, 0);
-          const data = canvas.toDataURL('image/jpeg', .89).split(',')[1];
+          const data = canvas.toDataURL('image/jpeg', .92).split(',')[1];
           resolve({w: canvas.width, h: canvas.height, data: atob(data)});
         } catch (_) { resolve(null); }
       };
@@ -341,10 +446,9 @@
     });
   }
   const logoPromise = loadLogo();
-
   function status(button, message, isError) {
     const span = button.parentElement && button.parentElement.querySelector('.maqon-pdf-status');
-    if (span) { span.textContent = message; span.style.color = isError ? '#ffb4a6' : '#a9d9ae'; }
+    if (span) { span.textContent = message; span.style.color = isError ? '#ffb4a6' : '#b8dfc1'; }
   }
   function download(bytes, filename) {
     const blob = new Blob([bytes], {type: 'application/pdf'});
@@ -361,19 +465,41 @@
     const button = document.createElement('button');
     button.id = id; button.type = 'button'; button.className = 'primary';
     button.textContent = '⬇ ' + buttonText;
-    button.style.cssText = 'background:linear-gradient(#ffdb58,#dfaa06);color:#141414;font-weight:800;min-height:39px;padding:8px 16px;border:0;border-radius:6px;cursor:pointer;';
+    button.style.cssText = 'background:linear-gradient(#ffdb58,#dfaa06);color:#141414;font-weight:800;min-height:41px;padding:8px 16px;border:0;border-radius:6px;cursor:pointer;';
     const small = document.createElement('span');
     small.className = 'maqon-pdf-status';
-    small.style.cssText = 'font-size:12px;color:#aab7bd;';
-    small.textContent = 'PDF A4 • Download direto • Sem envio de dados';
+    small.style.cssText = 'font-size:12px;color:#b8dfc1;';
+    small.textContent = 'PDF Executivo A4 • 2 páginas • Dados de demonstração';
     wrap.append(button, small);
-    return {wrap, button};
+    const details = document.createElement('details');
+    details.style.cssText = 'flex:1 1 100%;border:1px solid #384c52;border-radius:6px;padding:9px 12px;color:#e4e8e9;max-width:820px;';
+    const summary = document.createElement('summary');
+    summary.textContent = 'Personalizar relatório: cliente, elaboração e dados reais/demonstração';
+    summary.style.cssText = 'cursor:pointer;font-size:12px;color:#f3c744;font-weight:700;';
+    details.append(summary);
+    const fields = document.createElement('div');
+    fields.style.cssText = 'display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;align-items:center;';
+    const client = document.createElement('input');
+    client.type = 'text'; client.placeholder = 'Cliente / empresa (opcional)'; client.maxLength = 90;
+    client.style.cssText = 'flex:1 1 220px;padding:9px;border:1px solid #52656a;border-radius:4px;background:#071115;color:#fff;min-width:0;';
+    const responsible = document.createElement('input');
+    responsible.type = 'text'; responsible.placeholder = 'Elaboração (opcional)'; responsible.maxLength = 90;
+    responsible.style.cssText = client.style.cssText;
+    const demoLabel = document.createElement('label');
+    demoLabel.style.cssText = 'display:flex;align-items:center;gap:8px;font-size:12px;flex:1 1 100%;';
+    const demo = document.createElement('input'); demo.type = 'checkbox'; demo.checked = true;
+    demoLabel.append(demo, document.createTextNode('Dados fictícios / demonstração (desmarque apenas para dados reais)'));
+    fields.append(client, responsible, demoLabel);
+    details.append(fields);
+    wrap.append(details);
+    demo.addEventListener('change', () => { small.textContent = demo.checked ? 'PDF Executivo A4 • 2 páginas • Dados de demonstração' : 'PDF Executivo A4 • 2 páginas • Dados cadastrados'; });
+    return {wrap, button, readMeta: () => ({client: client.value, responsible: responsible.value, demo: demo.checked, date: new Date()})};
   }
   function init() {
     const compareSummary = document.getElementById('compareSummary');
     const analysisButton = document.getElementById('runAnalysis');
     if (compareSummary && !document.getElementById('maqonPdfComparativo')) {
-      const {wrap, button} = actionRow('Gerar Relatório Comparativo em PDF', 'maqonPdfComparativo');
+      const {wrap, button, readMeta} = actionRow('Gerar Relatório Comparativo Premium em PDF', 'maqonPdfComparativo');
       compareSummary.insertAdjacentElement('afterend', wrap);
       button.addEventListener('click', async () => {
         try {
@@ -384,19 +510,19 @@
           if (new Set(indices).size !== indices.length) { status(button, 'Selecione máquinas diferentes.', true); return; }
           const selected = indices.map(i => all[Number(i)]).filter(Boolean);
           if (selected.length !== indices.length) { status(button, 'Recarregue a página e selecione as máquinas novamente.', true); return; }
-          button.disabled = true; status(button, 'Preparando relatório...');
-          const bytes = comparisonReport(selected, await logoPromise);
-          download(bytes, 'MAQON_Relatorio_Comparativo_' + filenameDate() + '.pdf');
-          status(button, 'Relatório PDF gerado. Confira seus downloads.');
+          button.disabled = true; status(button, 'Preparando relatório premium...');
+          const meta = readMeta();
+          const bytes = reportComparison(selected, await logoPromise, meta);
+          download(bytes, 'MAQON_Comparativo_Premium_' + dateFile(meta.date) + '.pdf');
+          status(button, 'PDF premium gerado. Confira seus downloads.');
         } catch (e) { console.error('[MAQON PDF]', e); status(button, 'Erro ao gerar PDF. Verifique o console.', true); }
         finally { button.disabled = false; }
       });
     }
     if (analysisButton && !document.getElementById('maqonPdfIndividual')) {
-      const {wrap, button} = actionRow('Gerar Relatório Técnico em PDF', 'maqonPdfIndividual');
-      // Mantém o botão original de Gerar Análise intacto.
+      const {wrap, button, readMeta} = actionRow('Gerar Relatório Técnico Premium em PDF', 'maqonPdfIndividual');
       analysisButton.insertAdjacentElement('afterend', wrap);
-      wrap.style.marginTop = '0';
+      wrap.style.marginTop = '8px';
       button.addEventListener('click', async () => {
         try {
           const select = document.getElementById('analysisEquipment');
@@ -404,10 +530,11 @@
           if (!select || select.value === '' || !all[Number(select.value)]) {
             status(button, 'Selecione um equipamento cadastrado.', true); return;
           }
-          button.disabled = true; status(button, 'Preparando relatório...');
-          const bytes = individualReport(all[Number(select.value)], await logoPromise);
-          download(bytes, 'MAQON_Relatorio_Tecnico_' + filenameDate() + '.pdf');
-          status(button, 'Relatório PDF gerado. Confira seus downloads.');
+          button.disabled = true; status(button, 'Preparando relatório premium...');
+          const meta = readMeta();
+          const bytes = reportIndividual(all[Number(select.value)], await logoPromise, meta);
+          download(bytes, 'MAQON_Analise_Premium_' + dateFile(meta.date) + '.pdf');
+          status(button, 'PDF premium gerado. Confira seus downloads.');
         } catch (e) { console.error('[MAQON PDF]', e); status(button, 'Erro ao gerar PDF. Verifique o console.', true); }
         finally { button.disabled = false; }
       });
@@ -415,7 +542,9 @@
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
-
-  // API apenas para testes automatizados; não altera o funcionamento da plataforma.
-  if (typeof window !== 'undefined') window.MAQON_PDF_V1510 = {comparisonReport, individualReport, score};
+  // Interface de teste; não interfere com o restante da plataforma.
+  if (typeof window !== 'undefined') {
+    window.MAQON_PDF_V1511 = {comparisonReport: reportComparison, individualReport: reportIndividual, score};
+    window.MAQON_PDF_V1510 = window.MAQON_PDF_V1511;
+  }
 })();
