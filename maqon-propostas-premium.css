@@ -1,0 +1,97 @@
+/* MAQON V1.5.12 — formulário comercial premium. Escopo isolado em #proposalDialog. */
+#proposalDialog {
+  box-sizing: border-box;
+  width: min(960px, calc(100vw - 28px));
+  max-width: 960px;
+  max-height: 92vh;
+  max-height: 92dvh;
+  margin: auto;
+  padding: 0;
+  border: 1px solid #d9a800;
+  border-radius: 14px;
+  background: #f4f5f6;
+  color: #182329;
+  box-shadow: 0 24px 85px #000c;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+#proposalDialog::backdrop { background: rgba(0,0,0,.76); backdrop-filter: blur(3px); }
+#proposalDialog, #proposalDialog * { box-sizing: border-box; }
+#proposalDialog .proposal-premium-form { display: block; width: 100%; min-width: 0; margin: 0; padding: 0; }
+#proposalDialog .proposal-premium-heading {
+  position: sticky; top: 0; z-index: 3;
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 18px;
+  margin: 0; padding: 22px 26px;
+  background: linear-gradient(120deg,#0c161c,#15262e);
+  border-bottom: 4px solid #e7b318;
+  color: #fff;
+}
+#proposalDialog .proposal-premium-header-copy { min-width: 0; }
+#proposalDialog .proposal-premium-kicker { display: block; margin-bottom: 6px; color: #f9c533; font-weight: 900; font-size: 10px; letter-spacing: 1.5px; }
+#proposalDialog .proposal-premium-heading h2 { color: #fff; margin: 0 0 7px; font-size: 25px; line-height: 1.2; }
+#proposalDialog .proposal-premium-heading p { margin: 0; color: #cad4d9; font-size: 12px; line-height: 1.45; }
+#proposalDialog .proposal-close { flex: 0 0 36px; width: 36px; height: 36px; padding: 0; border: 1px solid #53646b; border-radius: 7px; background: #172931; color: #fff; font-size: 27px; line-height: 1; cursor: pointer; }
+#proposalDialog .proposal-premium-section { padding: 18px 25px 4px; margin: 0; }
+#proposalDialog .proposal-premium-section h3 {
+  display: flex; align-items: center; gap: 10px;
+  margin: 0 0 13px; padding: 10px 14px;
+  border-radius: 5px;
+  background: linear-gradient(95deg,#ffdc64,#eeb817);
+  color: #111a1e; font-size: 13px; font-weight: 900; letter-spacing: .3px;
+}
+#proposalDialog .proposal-premium-section h3 span { font-weight: 900; }
+#proposalDialog .proposal-premium-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px 16px; min-width: 0; }
+#proposalDialog .proposal-full { grid-column: 1 / -1; }
+#proposalDialog .proposal-premium-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; margin: 0; font-size: 12px; font-weight: 800; color: #25333b; }
+#proposalDialog .proposal-premium-field b, #proposalDialog .proposal-premium-actions b { color: #9a6800; }
+#proposalDialog .proposal-premium-field :is(input, select, textarea) {
+  display: block; width: 100%; min-width: 0; max-width: 100%;
+  margin: 0; padding: 10px 12px; min-height: 43px;
+  border: 1px solid #bcc8ce; border-radius: 6px;
+  background: #fff; color: #13232b;
+  font: 500 14px/1.45 Arial,Helvetica,sans-serif;
+  box-shadow: 0 1px 2px #13232b09;
+}
+#proposalDialog .proposal-premium-field textarea { min-height: 80px; resize: vertical; white-space: pre-wrap; }
+#proposalDialog .proposal-premium-field :is(input, select, textarea):focus { outline: 2px solid #d6a50b; outline-offset: 1px; border-color: #bb8a00; }
+#proposalDialog .proposal-premium-field :is(input,textarea)::placeholder { color: #6d7b82; }
+#proposalDialog .proposal-premium-field select option { color: #13232b; background: #fff; }
+#proposalDialog .proposal-premium-field small { color: #5d6d76; font-size: 10px; line-height: 1.4; font-weight: 400; }
+#proposalDialog .proposal-equipment-info {
+  padding: 12px 14px; background: #eaf0f3; border: 1px solid #d0dbe0; border-left: 4px solid #e0aa09;
+  border-radius: 5px; color: #293d47; font-size: 12px; line-height: 1.6; overflow-wrap: anywhere;
+}
+#proposalDialog .proposal-equipment-info strong { display: block; font-size: 13px; margin-bottom: 3px; color: #0e1b20; }
+#proposalDialog .proposal-equipment-info span { display: inline-block; margin-right: 15px; }
+#proposalDialog .proposal-premium-actions {
+  position: sticky; bottom: 0; z-index: 2;
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+  margin-top: 22px; padding: 16px 25px;
+  border-top: 2px solid #d7b248; background: #f8f9fa; box-shadow: 0 -8px 20px #0000000d;
+}
+#proposalDialog .proposal-premium-actions > span { font-size: 11px; color: #52636b; max-width: 300px; line-height: 1.4; }
+#proposalDialog .proposal-premium-buttons { display: flex; flex-wrap: wrap; gap: 9px; }
+#proposalDialog .proposal-premium-buttons button {
+  min-height: 43px; min-width: 118px; padding: 10px 14px;
+  border: 1px solid #314750; border-radius: 6px; background: #13252d; color: #fff;
+  font: 800 12px/1.3 Arial,Helvetica,sans-serif; cursor: pointer;
+}
+#proposalDialog .proposal-premium-buttons .primary { border-color: #d1a112; background: linear-gradient(180deg,#ffdf69,#eab10c); color: #111; }
+#proposalDialog .proposal-premium-buttons .proposal-secondary:first-child { background: #e8edef; color: #152630; border-color: #9babb4; }
+@media(max-width: 680px) {
+  #proposalDialog { width: calc(100vw - 16px)!important; max-width: none!important; max-height: 95dvh!important; border-radius: 9px; padding: 0!important; overflow-x: hidden!important; overflow-y: auto!important; }
+  #proposalDialog .proposal-premium-heading { padding: 17px 15px; }
+  #proposalDialog .proposal-premium-heading h2 { font-size: 20px; }
+  #proposalDialog .proposal-premium-section { padding: 14px 12px 2px; }
+  #proposalDialog .proposal-premium-grid { grid-template-columns: minmax(0,1fr); gap: 11px; }
+  #proposalDialog .proposal-full { grid-column: auto; }
+  #proposalDialog .proposal-premium-field :is(input,select,textarea) { font-size: 16px; }
+  #proposalDialog .proposal-premium-actions { position: static; padding: 15px 12px; }
+  #proposalDialog .proposal-premium-actions > span { max-width: 100%; }
+  #proposalDialog .proposal-premium-buttons { width: 100%; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); }
+  #proposalDialog .proposal-premium-buttons button { min-width: 0; }
+  #proposalDialog #proposalPreviewPdf { grid-column: 1 / -1; }
+}
+#proposalDialog .proposal-premium-check { display: flex; align-items: center; gap: 10px; color: #30414b; font-size: 12px; font-weight: 700; line-height: 1.45; }
+#proposalDialog .proposal-premium-check input { width: 18px; height: 18px; flex: 0 0 18px; accent-color: #c18f00; }

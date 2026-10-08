@@ -2,8 +2,9 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MAQON | Plataforma Comercial V1.5.11</title>
+<title>MAQON | Plataforma Comercial V1.5.12</title>
 <link rel="stylesheet" href="estilo.css?v=151">
+<link rel="stylesheet" href="maqon-propostas-premium.css?v=1512">
 </head>
 <body>
 <header class="hero" aria-label="MAQON — Inteligência em equipamentos pesados"></header>
@@ -191,10 +192,10 @@
   </div>
 </section>
 
-<section id="config" class="view"><h1>Configurações</h1><article class="panel"><h2>Dados da plataforma</h2><p><b>Produto:</b> MAQON — Consultoria em Equipamentos Pesados</p><p><b>Contato oficial:</b> maqonapp@gmail.com</p><p><b>Versão:</b> V1.5.11 Relatórios Executivos Premium</p><p><b>Armazenamento atual:</b> dados operacionais salvos no navegador deste dispositivo.</p><p><b>Integrações:</b> credenciais externas não ficam expostas nesta página.</p><hr style="border-color:#31434b"><p>Antes da venda em escala/multiusuário, a próxima evolução técnica é autenticação e banco de dados em nuvem.</p></article></section>
+<section id="config" class="view"><h1>Configurações</h1><article class="panel"><h2>Dados da plataforma</h2><p><b>Produto:</b> MAQON — Consultoria em Equipamentos Pesados</p><p><b>Contato oficial:</b> maqonapp@gmail.com</p><p><b>Versão:</b> V1.5.12 Formulário de Propostas Premium</p><p><b>Armazenamento atual:</b> dados operacionais salvos no navegador deste dispositivo.</p><p><b>Integrações:</b> credenciais externas não ficam expostas nesta página.</p><hr style="border-color:#31434b"><p>Antes da venda em escala/multiusuário, a próxima evolução técnica é autenticação e banco de dados em nuvem.</p></article></section>
 </main>
 
-<footer><b>MAQON</b><span class="foot-left">CONSULTORIA EM EQUIPAMENTOS PESADOS　|　✉ maqonapp@gmail.com　|　PLANEJAMENTO　|　ANÁLISE　|　CUSTO-BENEFÍCIO　|　DISPONIBILIDADE　|　PRODUTIVIDADE　|　SEGURANÇA</span><span class="foot-right">Máquinas em movimento. Resultados para você.　 <strong>V1.5.11</strong>　● Online</span></footer>
+<footer><b>MAQON</b><span class="foot-left">CONSULTORIA EM EQUIPAMENTOS PESADOS　|　✉ maqonapp@gmail.com　|　PLANEJAMENTO　|　ANÁLISE　|　CUSTO-BENEFÍCIO　|　DISPONIBILIDADE　|　PRODUTIVIDADE　|　SEGURANÇA</span><span class="foot-right">Máquinas em movimento. Resultados para você.　 <strong>V1.5.12</strong>　● Online</span></footer>
 
 <dialog id="leadDialog" class="lead-dialog"><form id="leadForm"><h2 id="leadDialogTitle">Novo Lead</h2>
 <div class="lead-grid">
@@ -215,5 +216,78 @@
 <label class="lead-field lead-field-wide"><span>Necessidade do cliente / aplicação</span><textarea id="leadNeed" rows="3" placeholder="Necessidade do cliente / aplicação"></textarea></label>
 <label class="lead-field lead-field-wide"><span>Observações comerciais</span><textarea id="leadNotes" rows="3" placeholder="Observações comerciais"></textarea></label>
 </div><div class="lead-actions"><button type="button" id="cancelLead">Cancelar</button><button class="primary" id="save" type="submit">Salvar</button></div></form></dialog>
-<dialog id="equipmentDialog"><form id="equipmentForm"><h2 id="equipmentDialogTitle">Novo Equipamento</h2><select id="eqCategory"><option>Escavadeira</option><option>Retroescavadeira</option><option>Motoniveladora</option><option>Pá Carregadeira</option><option>Trator de Esteiras</option><option>Guindaste</option><option>Munck</option><option>Caminhão Basculante</option><option>Caminhão Pipa</option><option>Outro</option></select><input id="eqMaker" placeholder="Fabricante" required><input id="eqModel" placeholder="Modelo" required><input id="eqYear" type="number" placeholder="Ano"><input id="eqHours" type="number" step="0.1" placeholder="Horímetro (h)"><input id="eqValue" type="number" step="0.01" placeholder="Valor de compra (R$)"><input id="eqConsumption" type="number" step="0.01" placeholder="Consumo (L/h)"><input id="eqMaintenance" type="number" step="0.01" placeholder="Custo manutenção (R$/h)"><input id="eqAvailability" type="number" step="0.1" min="0" max="100" placeholder="Disponibilidade (%)"><select id="eqStatus"><option>Ativo</option><option>Em manutenção</option><option>Disponível</option><option>Locado</option><option>Vendido</option><option>Inativo</option></select><div><button type="button" id="cancelEquipment">Cancelar</button><button class="primary" type="submit">Salvar</button></div></form></dialog><dialog id="proposalDialog"><form id="proposalForm"><h2 id="proposalDialogTitle">Nova Proposta</h2><select id="proposalClient" required></select><select id="proposalEquipment" required></select><select id="proposalMode"><option>Compra</option><option>Venda</option><option>Locação</option><option>Consultoria</option><option>Manutenção</option><option>Projeto Especial</option></select><textarea id="proposalScope" placeholder="Descrição / escopo" rows="4"></textarea><input id="proposalValue" type="number" step="0.01" min="0" placeholder="Valor da proposta (R$)" required><input id="proposalValidity" type="date" required><textarea id="proposalTerms" placeholder="Condições comerciais / pagamento" rows="3"></textarea><select id="proposalStatus"><option>Rascunho</option><option>Enviada</option><option>Em negociação</option><option>Aprovada</option><option>Recusada</option><option>Expirada</option></select><div><button type="button" id="cancelProposal">Cancelar</button><button class="primary" type="submit">Salvar</button></div></form></dialog><script src="app.js?v=154"></script><script src="maqon-equipment-library.js?v=159"></script><script src="maqon-relatorios-pdf.js?v=1511"></script>
+<dialog id="equipmentDialog"><form id="equipmentForm"><h2 id="equipmentDialogTitle">Novo Equipamento</h2><select id="eqCategory"><option>Escavadeira</option><option>Retroescavadeira</option><option>Motoniveladora</option><option>Pá Carregadeira</option><option>Trator de Esteiras</option><option>Guindaste</option><option>Munck</option><option>Caminhão Basculante</option><option>Caminhão Pipa</option><option>Outro</option></select><input id="eqMaker" placeholder="Fabricante" required><input id="eqModel" placeholder="Modelo" required><input id="eqYear" type="number" placeholder="Ano"><input id="eqHours" type="number" step="0.1" placeholder="Horímetro (h)"><input id="eqValue" type="number" step="0.01" placeholder="Valor de compra (R$)"><input id="eqConsumption" type="number" step="0.01" placeholder="Consumo (L/h)"><input id="eqMaintenance" type="number" step="0.01" placeholder="Custo manutenção (R$/h)"><input id="eqAvailability" type="number" step="0.1" min="0" max="100" placeholder="Disponibilidade (%)"><select id="eqStatus"><option>Ativo</option><option>Em manutenção</option><option>Disponível</option><option>Locado</option><option>Vendido</option><option>Inativo</option></select><div><button type="button" id="cancelEquipment">Cancelar</button><button class="primary" type="submit">Salvar</button></div></form></dialog><dialog id="proposalDialog" aria-labelledby="proposalDialogTitle">
+  <form id="proposalForm" class="proposal-premium-form">
+    <header class="proposal-premium-heading">
+      <div class="proposal-premium-header-copy">
+        <span class="proposal-premium-kicker">MAQON | GESTÃO DE PROPOSTAS</span>
+        <h2 id="proposalDialogTitle">Nova Proposta Comercial</h2>
+        <p>Identificação do cliente, equipamento, escopo e condições comerciais.</p>
+      </div>
+      <button type="button" id="proposalCloseX" class="proposal-close" aria-label="Fechar proposta">×</button>
+    </header>
+
+    <section class="proposal-premium-section" aria-labelledby="propClientSection">
+      <h3 id="propClientSection">01 <span>CLIENTE / CONTATO</span></h3>
+      <div class="proposal-premium-grid">
+        <label class="proposal-premium-field proposal-full" for="proposalClient"><span>Cliente / Lead <b>*</b></span><select id="proposalClient" required></select></label>
+        <label class="proposal-premium-field" for="proposalCompany"><span>Empresa / Razão social</span><input id="proposalCompany" maxlength="130" placeholder="Conforme cadastro do cliente"></label>
+        <label class="proposal-premium-field" for="proposalContact"><span>Contato responsável</span><input id="proposalContact" maxlength="110" placeholder="Nome do contato"></label>
+        <label class="proposal-premium-field" for="proposalEmail"><span>E-mail</span><input id="proposalEmail" type="email" maxlength="150" placeholder="contato@empresa.com.br"></label>
+        <label class="proposal-premium-field" for="proposalPhone"><span>WhatsApp / Telefone</span><input id="proposalPhone" type="tel" maxlength="30" placeholder="(00) 00000-0000"></label>
+        <label class="proposal-premium-field proposal-full" for="proposalCity"><span>Cidade / UF</span><input id="proposalCity" maxlength="100" placeholder="Localidade do cliente"></label>
+      </div>
+    </section>
+
+    <section class="proposal-premium-section" aria-labelledby="propEquipmentSection">
+      <h3 id="propEquipmentSection">02 <span>EQUIPAMENTO E FORNECIMENTO</span></h3>
+      <div class="proposal-premium-grid">
+        <label class="proposal-premium-field proposal-full" for="proposalEquipment"><span>Equipamento cadastrado <b>*</b></span><select id="proposalEquipment" required></select></label>
+        <div class="proposal-equipment-info proposal-full" id="proposalEquipmentInfo" aria-live="polite">Selecione um equipamento para visualizar as características cadastradas.</div>
+        <label class="proposal-premium-field" for="proposalMode"><span>Modalidade <b>*</b></span><select id="proposalMode"><option>Compra</option><option>Venda</option><option>Locação</option><option>Consultoria</option><option>Manutenção</option><option>Projeto Especial</option></select></label>
+        <label class="proposal-premium-field" for="proposalQuantity"><span>Quantidade <b>*</b></span><input id="proposalQuantity" type="number" min="1" max="9999" step="1" value="1" required></label>
+        <label class="proposal-premium-field" for="proposalLocation"><span>Local de entrega / operação</span><input id="proposalLocation" maxlength="180" placeholder="Cidade, UF ou endereço operacional"></label>
+        <label class="proposal-premium-field" for="proposalDelivery"><span>Prazo de entrega / mobilização</span><input id="proposalDelivery" maxlength="100" placeholder="Ex.: 30 dias após contratação"></label>
+      </div>
+    </section>
+
+    <section class="proposal-premium-section" aria-labelledby="propCommercialSection">
+      <h3 id="propCommercialSection">03 <span>CONDIÇÕES COMERCIAIS</span></h3>
+      <div class="proposal-premium-grid">
+        <label class="proposal-premium-field" for="proposalValue"><span>Valor total da proposta (R$) <b>*</b></span><input id="proposalValue" type="number" step="0.01" min="0" placeholder="375000.00" required><small>Valor total negociado, não necessariamente o preço cadastrado do equipamento.</small></label>
+        <label class="proposal-premium-field" for="proposalValidity"><span>Validade da proposta <b>*</b></span><input id="proposalValidity" type="date" required></label>
+        <label class="proposal-premium-field proposal-full" for="proposalTerms"><span>Condições comerciais / pagamento</span><textarea id="proposalTerms" rows="3" placeholder="Descreva forma de pagamento, parcelas, impostos e condições negociadas."></textarea></label>
+        <label class="proposal-premium-field" for="proposalWarranty"><span>Garantia / suporte</span><input id="proposalWarranty" maxlength="180" placeholder="Informar somente condições confirmadas"></label>
+        <label class="proposal-premium-field" for="proposalFreight"><span>Frete / mobilização</span><input id="proposalFreight" maxlength="180" placeholder="Responsabilidade e condições"></label>
+      </div>
+    </section>
+
+    <section class="proposal-premium-section" aria-labelledby="propScopeSection">
+      <h3 id="propScopeSection">04 <span>DESCRIÇÃO / ESCOPO</span></h3>
+      <div class="proposal-premium-grid">
+        <label class="proposal-premium-field proposal-full" for="proposalScope"><span>Descrição detalhada da proposta</span><textarea id="proposalScope" rows="4" placeholder="Descreva exatamente o equipamento, serviço, entregáveis, aplicação e exclusões."></textarea></label>
+      </div>
+    </section>
+
+    <section class="proposal-premium-section" aria-labelledby="propControlSection">
+      <h3 id="propControlSection">05 <span>CONTROLE COMERCIAL</span></h3>
+      <div class="proposal-premium-grid">
+        <label class="proposal-premium-field" for="proposalStatus"><span>Status da proposta</span><select id="proposalStatus"><option>Rascunho</option><option>Enviada</option><option>Em negociação</option><option>Aprovada</option><option>Recusada</option><option>Expirada</option></select></label>
+        <label class="proposal-premium-field" for="proposalResponsible"><span>Responsável pela elaboração</span><input id="proposalResponsible" maxlength="100" placeholder="Equipe / consultor"></label>
+        <label class="proposal-premium-field proposal-full" for="proposalNotes"><span>Observações internas (não aparecem no PDF)</span><textarea id="proposalNotes" rows="2" placeholder="Anotações privadas para a equipe comercial"></textarea></label>
+        <label class="proposal-premium-check proposal-full" for="proposalDemo"><input id="proposalDemo" type="checkbox" checked><span>Dados fictícios / demonstração (desmarque somente ao utilizar dados reais e conferidos)</span></label>
+      </div>
+    </section>
+
+    <div class="proposal-premium-actions">
+      <span><b>*</b> Campos obrigatórios. Dados não preenchidos não serão inventados no documento.</span>
+      <div class="proposal-premium-buttons">
+        <button type="button" id="cancelProposal" class="proposal-secondary">Cancelar</button>
+        <button type="submit" class="proposal-secondary" id="proposalSave">Salvar proposta</button>
+        <button type="button" class="primary" id="proposalPreviewPdf">Visualizar / Salvar PDF</button>
+      </div>
+    </div>
+  </form>
+</dialog><script src="app.js?v=154"></script><script src="maqon-equipment-library.js?v=159"></script><script src="maqon-relatorios-pdf.js?v=1511"></script>
+<script src="maqon-propostas-premium.js?v=1512"></script>
 </body></html>
