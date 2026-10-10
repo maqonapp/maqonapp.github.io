@@ -654,3 +654,27 @@ aside .sidebrand {
   .lead-field-wide{grid-column:auto!important}
   .lead-field{font-size:11px!important}
 }
+
+/* MAQON V1.5.13 – Cadastro Premium de Equipamentos (escopo isolado) */
+dialog#equipmentDialog.eq-premium-dialog{width:min(960px,calc(100vw - 30px))!important;max-width:960px!important;max-height:92dvh!important;padding:0!important;overflow:hidden!important;border:1px solid #d3aa15!important;border-radius:16px!important;background:#f3f5f7!important;color:#18272f!important;box-shadow:0 18px 90px #000a!important}
+#equipmentDialog::backdrop{background:#000b;backdrop-filter:blur(2px)}
+#equipmentDialog #equipmentForm{display:flex!important;flex-direction:column!important;gap:0!important;max-height:92dvh!important;width:100%!important}
+#equipmentDialog .eq-premium-head{background:#10242e;color:#fff;padding:22px 27px;position:relative;border-bottom:5px solid #f5c21d;flex:none}
+#equipmentDialog .eq-premium-head>span{color:#ffcf36;font-weight:800;letter-spacing:1px;font-size:12px}
+#equipmentDialog .eq-premium-head h2{font-size:27px;margin:5px 45px 3px 0;color:#fff}
+#equipmentDialog .eq-premium-head p{margin:0;color:#d6e0e5;font-size:14px}
+#equipmentDialog .eq-premium-close{position:absolute;right:20px;top:20px;background:#203844;color:#fff;border:1px solid #6b858f;border-radius:9px;min-width:45px;font-size:23px}
+#equipmentDialog .eq-premium-content{overflow-y:auto;padding:22px 27px 28px;min-height:0;flex:1}
+#equipmentDialog .eq-premium-section{margin-bottom:22px}
+#equipmentDialog .eq-premium-section h3{background:linear-gradient(100deg,#ffe17b,#f0bc00);border-radius:8px;padding:12px 15px;margin:0 0 15px;font-size:16px;color:#17242b}
+#equipmentDialog .eq-premium-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+#equipmentDialog .eq-premium-field{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;color:#273943;min-width:0}
+#equipmentDialog .eq-premium-field input,#equipmentDialog .eq-premium-field select,#equipmentDialog .eq-premium-field textarea{width:100%;min-width:0;min-height:47px;box-sizing:border-box;border:1px solid #b8c9d2;border-radius:8px;background:#fff;color:#16262e;padding:12px;font-size:14px}
+#equipmentDialog .eq-premium-field textarea{resize:vertical;min-height:95px}
+#equipmentDialog .eq-premium-field:has(textarea){grid-column:1/-1}
+#equipmentDialog .eq-premium-field input:focus,#equipmentDialog .eq-premium-field select:focus,#equipmentDialog .eq-premium-field textarea:focus{outline:2px solid #e8b900;outline-offset:1px}
+#equipmentDialog .eq-premium-hint{color:#5b6c77;font-size:12px;line-height:1.55}
+#equipmentDialog .eq-premium-actions{position:static!important;height:auto!important;background:#edf1f4!important;border-top:1px solid #cfdae0;padding:15px 25px;display:flex;justify-content:flex-end;gap:12px;flex:none;white-space:normal}
+#equipmentDialog .eq-premium-actions button{font-weight:750;border-radius:8px;padding:12px 18px;min-height:46px}
+#equipmentDialog .eq-premium-actions .primary{background:#fac522;color:#14212a;border:1px solid #cc9e03}
+@media(max-width:650px){dialog#equipmentDialog.eq-premium-dialog{width:calc(100vw - 12px)!important;max-height:94dvh!important}#equipmentDialog #equipmentForm{max-height:94dvh!important}#equipmentDialog .eq-premium-head{padding:18px}#equipmentDialog .eq-premium-head h2{font-size:21px}#equipmentDialog .eq-premium-content{padding:16px}#equipmentDialog .eq-premium-grid{grid-template-columns:1fr}#equipmentDialog .eq-premium-actions{padding:12px;gap:8px}#equipmentDialog .eq-premium-actions button{padding:10px}}
