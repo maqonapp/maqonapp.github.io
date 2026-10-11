@@ -149,9 +149,10 @@
       form.elements.status.value=record.status||statusOptions(type)[0];
       form.elements.observacoes.value=record.observacoes||'';
     }
+    window.MAQONMaintenanceDocuments?.open(editingId);
     if(!modal.open)modal.showModal();
   }
-  function onSubmit(event){
+  async function onSubmit(event){
     event.preventDefault();
     if(!form.reportValidity())return;
     const eqKey=form.elements.equipamento.value;
@@ -164,6 +165,7 @@
     const updated=editingId?records.map(r=>r.id===editingId?row:r):[row,...records];
     if(!save(updated))return;
     records=updated;modal.close();renderHistory();
+    try { await window.MAQONMaintenanceDocuments?.commit(row.id); } catch(err) { alert("Registro salvo, mas houve falha ao salvar os anexos. Verifique o espaço disponível e tente novamente."); }
   }
   function description(r){const f=r.fields||{};return r.type==='preventiva'?f.atividade||'—':r.type==='corretiva'?f.falha||'—':`${f.parametro||'—'}: ${f.medicao||'—'}`;}
   function dueStatus(r){
@@ -188,7 +190,7 @@
       const edit=e.target.closest('[data-mqm-edit]'),del=e.target.closest('[data-mqm-delete]');
       if(edit){const r=records.find(x=>x.id===edit.dataset.mqmEdit);if(r)open(r.type,r);}
       if(del){const r=records.find(x=>x.id===del.dataset.mqmDelete);if(r&&confirm(`Excluir registro de manutenção ${TYPES[r.type]} do equipamento ${r.equipment?.name||''}?`)){
-        const updated=records.filter(x=>x.id!==r.id);if(save(updated)){records=updated;renderHistory();}
+        const updated=records.filter(x=>x.id!==r.id);if(save(updated)){records=updated;renderHistory();window.MAQONMaintenanceDocuments?.delete(r.id).catch(console.error);}
       }}
     });
   }
