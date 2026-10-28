@@ -5,8 +5,10 @@
 <title>MAQON | Plataforma Comercial V1.5.12</title>
 <link rel="stylesheet" href="estilo.css?v=1513e">
 <link rel="stylesheet" href="maqon-propostas-premium.css?v=1512">
+<style id="maqon-gate-style">html.maqon-auth-locked body > :not(#maqon-login-gate){visibility:hidden!important}#maqon-login-gate[hidden]{display:none!important}#maqon-login-gate{position:fixed;inset:0;z-index:2147483647;background:#071923;color:#eef6f8;display:flex;align-items:center;justify-content:center;padding:20px;font-family:Arial,sans-serif}#maqon-login-gate form{width:min(440px,100%);padding:30px;border:1px solid #42606a;border-radius:15px;background:#122d38}#maqon-login-gate h2{color:#f4bf21}#maqon-login-gate label{display:block;margin:14px 0}#maqon-login-gate input{display:block;width:100%;padding:12px;margin-top:6px;border:1px solid #91aab3;border-radius:7px}#maqon-login-gate button{padding:12px 18px;background:#f4bf21;border:0;border-radius:8px;font-weight:700;cursor:pointer}#maqon-login-status{min-height:2em;color:#f5d8a1;font-size:13px}#maqon-logout{position:fixed;right:12px;top:12px;z-index:9999;padding:8px;background:#f4bf21;border:0;border-radius:5px;cursor:pointer}#maqon-logout[hidden]{display:none!important}</style><script>document.documentElement.classList.add('maqon-auth-locked');</script>
 </head>
 <body>
+<section id="maqon-login-gate" role="dialog" aria-modal="true" aria-label="Login de homologação MAQON"><form id="maqon-login-form"><h2>MAQON • Acesso de homologação</h2><p>Exclusivo para contas de teste. Não utilize dados reais de clientes.</p><label>E-mail<input id="maqon-login-email" type="email" autocomplete="username" required></label><label>Senha<input id="maqon-login-password" type="password" autocomplete="current-password" required></label><button type="submit">Entrar</button><p id="maqon-login-status" role="status">Preparando autenticação...</p><small>Este acesso ainda não autoriza assinatura ou uso comercial.</small></form></section><button id="maqon-logout" hidden type="button">Sair</button><span id="maqon-empresa-sessao" hidden></span>
 <header class="hero" aria-label="MAQON — Inteligência em equipamentos pesados"></header>
 
 <aside>
@@ -288,6 +290,6 @@
       </div>
     </div>
   </form>
-</dialog><script src="app.js?v=154"></script><script src="maqon-equipment-library.js?v=159"></script><script src="maqon-relatorios-pdf.js?v=1511"></script>
+</dialog><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="maqon-supabase-config.js?v=171"></script><script src="maqon-dashboard-login.js?v=171"></script><script src="app.js?v=154"></script><script src="maqon-equipment-library.js?v=159"></script><script src="maqon-relatorios-pdf.js?v=1511"></script>
 <script src="maqon-propostas-premium.js?v=1512"></script>
 <script src="maqon-manutencao.js?v=1513"></script><script src="maqon-manutencao-documentos.js?v=15142"></script></body></html>
