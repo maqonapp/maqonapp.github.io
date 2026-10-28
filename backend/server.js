@@ -312,6 +312,8 @@ app.post('/api/whatsapp/webhook',express.raw({type:'application/json'}),(req,res
 });
 
 app.use(express.json({limit:'256kb'}));
+// MAQON V1.7 — permissão comercial restrita; desligada por padrão.
+require('./maqon-access-api')(app);
 
 app.post('/api/meta/connect-url',requireAdmin,(req,res)=>{
  const miss=missing(metaRequired);if(miss.length)return res.status(503).json({error:`Backend Meta incompleto: ${miss.join(', ')}`});

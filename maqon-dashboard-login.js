@@ -13,12 +13,32 @@
  if(!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(cfg.url||'') || !String(cfg.publishableKey||'').startsWith('sb_publishable_') || !window.supabase?.createClient){fail('Configuração Supabase indisponível.');return;}
  const db=window.supabase.createClient(cfg.url.replace(/\/$/,''),cfg.publishableKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
  let ticket=0,verifiedUser=null;
+ const accessBase=String(window.MAQON_ACCESS_API_BASE||'').replace(/\/$/,'');
+ async function verifyCommercialAccess(user, companyId){
+   if(!/^https:\/\//.test(accessBase)) throw Error('API comercial ainda não configurada.');
+   const {data:{session}}=await db.auth.getSession();
+   if(!session?.access_token)throw Error('Sessão expirada.');
+   const r=await fetch(accessBase+'/api/maqon/acesso/status',{
+     headers:{Authorization:'Bearer '+session.access_token,Accept:'application/json'},
+     cache:'no-store',signal:AbortSignal.timeout(10000)
+   });
+   if(!r.ok)throw Error('Autorização comercial indisponível.');
+   const result=await r.json();
+   if(result.empresa_id!==companyId||result.access_granted!==true)
+     throw Error('Acesso Premium não autorizado para esta empresa.');
+   // Bloqueio deliberado até que TODAS as operações de dados migrem do localStorage.
+   if(window.MAQON_CLOUD_DATA_READY!==true)
+     throw Error('Migração de dados do dashboard pendente; somente ambiente de homologação.');
+   return result;
+ }
  const lock=()=>{ticket++;verifiedUser=null;document.documentElement.classList.add('maqon-auth-locked');overlay.hidden=false;if(companyEl)companyEl.textContent='';if(signout)signout.hidden=true;};
  const check=async()=>{const now=++ticket;document.documentElement.classList.add('maqon-auth-locked');overlay.hidden=false;fail('Validando sua conta de homologação...');
   try{
    const {data:{user},error}=await db.auth.getUser();if(error||!user)throw Error('Entre com uma conta autorizada.');
    const r=await db.from('maqon_usuarios').select('empresa_id,perfil,maqon_empresas(nome)').eq('usuario_id',user.id);
    if(r.error||r.data?.length!==1||!r.data[0]?.empresa_id)throw Error('Vínculo único de empresa indisponível.');
+   if(now!==ticket)return;
+   await verifyCommercialAccess(user,r.data[0].empresa_id);
    if(now!==ticket)return;
    verifiedUser=user.id;
    const company=r.data[0].maqon_empresas?.nome||'Empresa vinculada';
