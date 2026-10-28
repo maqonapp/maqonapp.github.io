@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>MAQON V1.6.11.2 | Homologação Multiempresa</title>
+<style>
+:root{font-family:Arial,Helvetica,sans-serif;color:#f2f6f8;background:#061218}*{box-sizing:border-box}body{margin:0;background:#061218}main{max-width:1180px;margin:auto;padding:26px 20px}h1,h2{color:#ffc900}h1{font-size:26px}h2{font-size:20px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid #af8700;padding-bottom:14px;flex-wrap:wrap}.panel{background:#102630;border:1px solid #36505b;border-radius:11px;padding:18px;margin:18px 0}.warning{border-color:#b69122}.muted{color:#bdd1dc}.cardrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.card b{font-size:28px;color:#ffc900;display:block;padding-top:10px}button{border:0;background:#ffc900;color:#061218;padding:11px 18px;border-radius:7px;font-weight:700;cursor:pointer}button:disabled{opacity:.5;cursor:wait}.secondary{background:#2b4550;color:white}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}label{font-size:13px;font-weight:700;display:block}input,select,textarea{margin-top:6px;display:block;width:100%;padding:10px;border-radius:6px;border:1px solid #8399a4;font:inherit;background:white;color:#17252e}input:focus,select:focus{outline:2px solid #ffc900}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.scroll{overflow:auto}table{width:100%;border-collapse:collapse;min-width:780px}td,th{padding:10px;text-align:left;border-bottom:1px solid #35505a}th{color:#ffc900;font-size:13px}td button{padding:7px 11px}#login{max-width:460px;margin:11vh auto;border-color:#b69122}#error,#notice{min-height:20px}#error{color:#ffc1c1}#notice{color:#b0f1c0}#workspace{display:none}#login button{margin-top:14px}.readonly{font-style:italic;color:#bdd1dc}
+</style></head><body>
+<main id="login" class="panel"><h1>MAQON • Acesso de homologação</h1><p class="muted">Acesso exclusivo a usuários de teste. Não cadastre dados reais de clientes.</p><form id="login-form"><label>E-mail<input id="login-email" type="email" autocomplete="username" required></label><label>Senha<input id="login-password" type="password" autocomplete="current-password" required></label><button id="login-button" type="submit">Entrar</button><p id="error" role="alert"></p></form></main>
+<main id="workspace"><div class="top"><div><h1>MAQON • Homologação V1.6.11.2</h1><b id="company-name">—</b><div id="who" class="muted"></div></div><button id="signout">Sair</button></div>
+<section class="panel warning"><strong>Ambiente seguro de homologação</strong><p>Equipamentos, propostas, leads e manutenções fictícias podem ser cadastrados no Supabase. Documentos e evidências fictícias podem ser testados em armazenamento privado; integrações e relatórios Premium completos continuam bloqueados; apenas o PDF técnico de teste está disponível. Não utilize dados reais de clientes.</p></section>
+<div class="cardrow"><div class="panel card">Empresa vinculada<b id="companies">1</b></div><div class="panel card">Equipamentos no Supabase<b id="count">0</b></div><div class="panel card">Propostas no Supabase<b id="proposal-count">0</b></div><div class="panel card">Leads no Supabase<b id="lead-count">0</b></div><div class="panel card">Manutenções no Supabase<b id="maintenance-count">0</b></div></div>
+<section class="panel"><h2 id="form-title">Cadastrar equipamento de teste</h2><form id="equipment-form"><div class="grid">
+<label>Categoria *<input id="category" maxlength="100" required placeholder="Escavadeira hidráulica"></label>
+<label>Fabricante *<input id="manufacturer" maxlength="100" required placeholder="Komatsu"></label>
+<label>Modelo *<input id="model" maxlength="100" required placeholder="PC210"></label>
+<label>Ano<input id="year" type="number" min="1900" max="2200" step="1" placeholder="2026"></label>
+<label>Prefixo<input id="prefix" maxlength="100" placeholder="EQ-001"></label>
+<label>Situação<select id="status"><option value="ativo">Ativo</option><option value="inativo">Inativo</option><option value="manutencao">Manutenção</option><option value="vendido">Vendido</option></select></label>
+</div><div class="actions"><button id="save" type="submit">Salvar equipamento</button><button class="secondary" type="button" id="cancel" hidden>Cancelar edição</button></div></form><p id="notice" aria-live="polite"></p></section>
+<section class="panel"><h2>Equipamentos da empresa</h2><p id="status-text" class="muted">Carregando...</p><div class="scroll"><table><thead><tr><th>Categoria</th><th>Fabricante</th><th>Modelo</th><th>Ano</th><th>Prefixo</th><th>Situação</th><th>Ação</th></tr></thead><tbody id="equipment-rows"></tbody></table></div></section>
+
+<section class="panel"><h2 id="proposal-form-title">Cadastrar proposta comercial de teste</h2><form id="proposal-form"><div class="grid">
+<label>Cliente *<input id="proposal-client" maxlength="180" required placeholder="Cliente de teste"></label>
+<label>Título da proposta *<input id="proposal-title" maxlength="180" required placeholder="Locação de equipamento - TESTE"></label>
+<label>Número<input id="proposal-number" maxlength="80" required placeholder="Ex.: TESTE-001"></label>
+<label>Modalidade<input id="proposal-type" maxlength="100" required placeholder="Ex.: Locação"></label>
+<label>Valor total (R$)<input id="proposal-value" type="number" step="0.01" min="0" max="999999999999" placeholder="15000.00"></label>
+<label>Validade até<input id="proposal-expiry" type="date"></label>
+<label>Situação<select id="proposal-status"><option value="rascunho">Rascunho</option><option value="enviada">Enviada</option><option value="negociacao">Negociação</option><option value="aprovada">Aprovada</option><option value="cancelada">Cancelada</option></select></label>
+</div><div class="actions"><button id="proposal-save" type="submit">Salvar proposta</button><button class="secondary" type="button" id="proposal-cancel" hidden>Cancelar edição</button></div></form><p id="proposal-notice" aria-live="polite"></p></section>
+<section class="panel"><h2>Propostas da empresa — Supabase</h2><p id="proposal-status-text" class="muted">Carregando...</p><div class="scroll"><table><thead><tr><th>Número</th><th>Cliente</th><th>Título</th><th>Modalidade</th><th>Valor (R$)</th><th>Validade</th><th>Situação</th><th>Ação</th></tr></thead><tbody id="proposal-rows"></tbody></table></div></section>
+
+<section class="panel"><h2 id="lead-form-title">Cadastrar lead de teste</h2><p class="muted">Use apenas dados fictícios. Cada registro pertence à empresa autenticada.</p><form id="lead-form"><div class="grid">
+<label>Nome do contato *<input id="lead-name" required minlength="2" maxlength="180" placeholder="Contato fictício"></label>
+<label>Empresa do cliente<input id="lead-company" maxlength="180" placeholder="Empresa fictícia"></label>
+<label>E-mail<input id="lead-email" type="email" maxlength="180" placeholder="teste@example.com"></label>
+<label>Telefone<input id="lead-phone" maxlength="40" placeholder="(00) 00000-0000"></label>
+<label>Equipamento de interesse<input id="lead-equipment" maxlength="180" placeholder="Escavadeira hidráulica"></label>
+<label>Origem<input id="lead-origin" maxlength="120" placeholder="Site MAQON"></label>
+<label>Etapa<select id="lead-stage"><option value="novo">Novo</option><option value="contato">Em contato</option><option value="proposta">Proposta</option><option value="negociacao">Negociação</option><option value="ganho">Ganho</option><option value="perdido">Perdido</option></select></label>
+<label>Observações<input id="lead-notes" maxlength="1000" placeholder="Somente observações fictícias"></label>
+</div><div class="actions"><button id="lead-save" type="submit">Salvar lead</button><button type="button" class="secondary" id="lead-cancel" hidden>Cancelar edição</button></div></form><p id="lead-notice" aria-live="polite"></p></section>
+<section class="panel"><h2>Leads da empresa — Supabase</h2><p id="lead-status-text" class="muted">Carregando...</p><div class="scroll"><table><thead><tr><th>Contato</th><th>Empresa</th><th>E-mail</th><th>Telefone</th><th>Equipamento</th><th>Origem</th><th>Etapa</th><th>Ação</th></tr></thead><tbody id="lead-rows"></tbody></table></div></section>
+
+<section class="panel"><h2 id="maintenance-form-title">Cadastrar manutenção de teste</h2><p class="muted">Somente registros fictícios. Escolha um equipamento da empresa autenticada. Fotos e arquivos permanecem bloqueados nesta etapa.</p><form id="maintenance-form"><div class="grid">
+<label>Equipamento *<select id="maintenance-equipment" required><option value="">Selecione um equipamento</option></select></label>
+<label>Tipo *<select id="maintenance-type" required><option value="preventiva">Preventiva</option><option value="corretiva">Corretiva</option><option value="preditiva">Preditiva</option></select></label>
+<label>Data de registro *<input id="maintenance-date" type="date" required></label>
+<label>Status *<select id="maintenance-status"><option value="planejada">Planejada</option><option value="em_andamento">Em andamento</option><option value="concluida">Concluída</option></select></label>
+<label>Responsável<input id="maintenance-owner" maxlength="160" placeholder="Técnico de teste"></label>
+<label>Prioridade<select id="maintenance-priority"><option value="">Não definida</option><option value="baixa">Baixa</option><option value="media">Média</option><option value="alta">Alta</option><option value="critica">Crítica</option></select></label>
+<label>Próxima data<input id="maintenance-next" type="date"></label>
+<label>Custo previsto (R$)<input id="maintenance-cost" type="number" min="0" max="999999999999" step="0.01" placeholder="500.00"></label>
+<label>Atividade/ocorrência *<textarea id="maintenance-activity" maxlength="2000" rows="2" required placeholder="Manutenção fictícia para homologação"></textarea></label>
+<label>Diagnóstico<textarea id="maintenance-diagnosis" maxlength="2000" rows="2"></textarea></label>
+<label>Ação recomendada<textarea id="maintenance-action" maxlength="2000" rows="2"></textarea></label>
+<label>Observações<textarea id="maintenance-notes" maxlength="2000" rows="2"></textarea></label>
+</div><div class="actions"><button type="submit" id="maintenance-save">Salvar manutenção</button><button type="button" class="secondary" id="maintenance-cancel" hidden>Cancelar edição</button></div></form><p id="maintenance-notice" aria-live="polite"></p></section>
+<section class="panel"><h2>Manutenções da empresa — Supabase</h2><p id="maintenance-status-text" class="muted">Carregando...</p><div class="scroll"><table><thead><tr><th>Equipamento</th><th>Tipo</th><th>Data</th><th>Status</th><th>Atividade</th><th>Responsável</th><th>Prioridade</th><th>Ação</th></tr></thead><tbody id="maintenance-rows"></tbody></table></div></section>
+<section class="panel" id="evidence-module">
+<h2>Documentos e evidências técnicas — Supabase privado</h2>
+<p class="muted">Somente arquivos fictícios. Cada evidência fica vinculada à sua empresa e a uma manutenção. Máximo 10 MB por arquivo: JPG, PNG, WebP ou PDF. Não utilize dados reais de clientes.</p>
+<form id="evidence-form"><div class="grid">
+<label>Manutenção vinculada *<select id="evidence-maintenance" required><option value="">Selecione uma manutenção</option></select></label>
+<label>Arquivo privado *<input id="evidence-file" type="file" accept=".jpg,.jpeg,.png,.webp,.pdf,image/jpeg,image/png,image/webp,application/pdf" required></label>
+<label>Título da evidência *<input id="evidence-title" maxlength="180" required placeholder="Foto da inspeção fictícia"></label>
+<label>Sistema / conjunto<input id="evidence-system" maxlength="180" placeholder="Sistema hidráulico"></label>
+<label>Componente / item<input id="evidence-component" maxlength="180" placeholder="Mangueira de teste"></label>
+<label>Condição identificada<textarea id="evidence-condition" maxlength="2000" rows="2"></textarea></label>
+<label>Prioridade<select id="evidence-priority"><option value="">Não definida</option><option value="baixa">Baixa</option><option value="media">Média</option><option value="alta">Alta</option><option value="critica">Crítica</option></select></label>
+<label>Observações<textarea id="evidence-notes" maxlength="2000" rows="2"></textarea></label>
+</div><div class="actions"><button type="submit" id="evidence-upload">Enviar arquivo privado</button><button type="button" class="secondary" id="evidence-refresh">Atualizar lista</button></div></form>
+<p id="evidence-notice" role="status" aria-live="polite"></p>
+<div class="scroll"><table><thead><tr><th>Título</th><th>Arquivo</th><th>Tipo</th><th>Prioridade</th><th>Data</th><th>Ação</th></tr></thead><tbody id="evidence-rows"><tr><td colspan="6">Entre com uma conta de teste.</td></tr></tbody></table></div>
+</section>
+<section class="panel" id="report-module"><h2>Relatório técnico PDF — Supabase privado (homologação)</h2><p class="muted">Gera um PDF local com dados autorizados da empresa e anexos de imagem privados. Não publica o relatório e não usa informações reais nesta fase. A versão Premium visual definitiva ainda requer integração e validação.</p><div class="grid"><label>Manutenção *<select id="report-maintenance"><option value="">Selecione uma manutenção</option></select></label><label>Incluir fotos privadas?<select id="report-images"><option value="sim">Sim — até 8 imagens</option><option value="nao">Não</option></select></label></div><div class="panel" style="background:#172e38;border-color:#997800;margin:12px 0"><h2 style="font-size:17px">Personalização do relatório PDF</h2><p class="muted">Somente neste PDF. Preencha os campos opcionais; não altera o cadastro nem os documentos no Supabase.</p><div class="grid">
+<label>Número do relatório<input id="report-number" maxlength="55" placeholder="Automático pela manutenção"></label>
+<label>Nome no cabeçalho<input id="report-brand" maxlength="75" placeholder="MAQON" value="MAQON"></label>
+<label>Título do documento<input id="report-title" maxlength="90" value="RELATÓRIO TÉCNICO DE MANUTENÇÃO"></label>
+<label>Subtítulo do cabeçalho<input id="report-subtitle" maxlength="110" placeholder="Consultoria em Equipamentos Pesados" value="Consultoria em Equipamentos Pesados"></label>
+<label>Elaborado por<input id="report-author" maxlength="100" placeholder="Nome do responsável técnico"></label>
+<label>Revisado por<input id="report-reviewer" maxlength="100" placeholder="Nome do revisor"></label>
+<label>Aprovado por<input id="report-approver" maxlength="100" placeholder="Nome do aprovador"></label>
+<label>Logo opcional (JPG ou PNG, até 2 MB)<input id="report-logo" type="file" accept="image/jpeg,image/png"></label>
+</div><p class="muted" style="font-size:12px">Número automático baseado no identificador da manutenção; não é sequência fiscal ou numeração centralizada. Os nomes de aprovação não equivalem a assinatura digital.</p></div><div class="actions"><button id="report-generate" type="button">Pré-visualizar relatório</button><button id="report-download" type="button" disabled>Salvar PDF definitivo</button><button id="report-save-settings" type="button" class="secondary">Salvar configurações</button><button id="report-reset-default" type="button" class="secondary">Restaurar padrão MAQON</button><button id="report-refresh" type="button" class="secondary">Atualizar manutenções</button></div><p class="muted" style="font-size:12px">A prévia é gerada no navegador e não publica o documento. Salvar configurações guarda apenas os campos textuais neste navegador, separados por usuário e empresa; não envia o modelo ao Supabase. Sem uma logo personalizada, o PDF usa automaticamente a logomarca MAQON. Restaurar padrão MAQON limpa as personalizações textuais salvas neste navegador para esta conta, sem alterar registros no Supabase.</p><div id="report-preview-box" style="display:none;margin-top:14px;border:1px solid #b68b00;border-radius:10px;padding:12px;background:#10252c"><h3 style="color:#ffc400;margin:0 0 8px">Pré-visualização do PDF — confira antes de salvar</h3><iframe id="report-preview-frame" title="Pré-visualização do relatório PDF" style="width:100%;height:660px;border:1px solid #45616b;background:#fff" loading="lazy"></iframe><p class="muted" style="font-size:12px">Se alterar qualquer campo, clique novamente em Pré-visualizar. O download usa somente a última prévia válida.</p></div><p id="report-notice" role="status" aria-live="polite"></p></section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="maqon-supabase-config.js?v=167"></script><script src="maqon-auth-pilot.js?v=169"></script><script src="maqon-evidencias-privadas.js?v=16101"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script><script src="maqon-relatorio-supabase.js?v=16114"></script></body></html>
