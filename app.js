@@ -1,3 +1,10 @@
+/* MAQON V1.7: legado local protegido no modo de integração Supabase.
+   Cadastros operacionais devem ser feitos na área existente de Supabase. */
+const MAQON_CLOUD_OPERATIONS = true;
+function maqonOpenCloudOperations(){
+  alert('Para cadastrar ou editar dados de clientes e equipamentos, utilize a área de operações Supabase. O módulo legado local não grava na nuvem.');
+  location.href='maqon-acesso-piloto.html';
+}
 const STORAGE_KEY='maqon_leads_v1';
 const seedLeads=[
 ['30/09/2026','Marcos Oliveira','Construtora Vale','(98) 99123-4567','Escavadeira','Novo Lead','Qualificação','Site'],
@@ -7,8 +14,8 @@ const seedLeads=[
 ['28/09/2026','Fernanda Costa','Costa Logística','(31) 98987-6543','Retroescavadeira','Cliente','Fechado','Site']
 ];
 let leads=loadLeads(); let editingIndex=null;
-function loadLeads(){try{const x=JSON.parse(localStorage.getItem(STORAGE_KEY));return Array.isArray(x)?x:[]}catch(e){return []}}
-function persist(){localStorage.setItem(STORAGE_KEY,JSON.stringify(leads))}
+function loadLeads(){return MAQON_CLOUD_OPERATIONS?[]:JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')}
+function persist(){if(MAQON_CLOUD_OPERATIONS){maqonOpenCloudOperations();return false;}localStorage.setItem(STORAGE_KEY,JSON.stringify(leads));return true;}
 function esc(v=''){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 function badge(v){return `<span class="badge" data-status="${esc(v)}">${esc(v)}</span>`}
 function loadCRMLeads(){try{const d=JSON.parse(localStorage.getItem('maqon_automation_v1'))||{};return Array.isArray(d.leads)?d.leads:[]}catch(e){return []}}
@@ -49,7 +56,7 @@ function go(id,track=true){const target=document.querySelector('#'+id);if(!targe
 document.querySelectorAll('.nav').forEach(n=>n.onclick=()=>{if(n.dataset.href){location.href=n.dataset.href;return}go(n.dataset.view)});document.querySelectorAll('[data-go]').forEach(n=>n.onclick=()=>go(n.dataset.go));
 const platformBack=document.querySelector('#platformBack');if(platformBack)platformBack.onclick=()=>{const prev=maqonViewHistory.pop();if(prev)go(prev,false);else go('dashboard',false)};const platformHome=document.querySelector('#platformHome');if(platformHome)platformHome.onclick=()=>go('dashboard');document.querySelectorAll('[data-report-view]').forEach(b=>b.onclick=()=>go(b.dataset.reportView));
 const d=document.querySelector('#leadDialog'),form=document.querySelector('#leadForm');
-function openLead(index=null){editingIndex=index;document.querySelector('#leadDialogTitle').textContent=index===null?'Novo Lead':'Editar Lead';if(index===null){form.reset();document.querySelector('#leadStatus').value='Novo Lead';document.querySelector('#leadPhase').value='Qualificação';document.querySelector('#leadOrigin').value='Manual';document.querySelector('#leadOwner').value='Renan';document.querySelector('#leadMode').value='Compra'}else{const x=leads[index];document.querySelector('#name').value=x[1]||'';document.querySelector('#company').value=x[2]||'';document.querySelector('#phone').value=x[3]||'';document.querySelector('#interest').value=x[4]||'Escavadeira';document.querySelector('#leadStatus').value=x[5]||'Novo Lead';document.querySelector('#leadPhase').value=x[6]||'Qualificação';document.querySelector('#leadOrigin').value=x[7]||'Manual';document.querySelector('#leadEmail').value=x[8]||'';document.querySelector('#leadCity').value=x[9]||'';document.querySelector('#leadUF').value=x[10]||'';document.querySelector('#leadBrandModel').value=x[11]||'';document.querySelector('#leadMode').value=x[12]||'Compra';document.querySelector('#leadBudget').value=x[13]||'';document.querySelector('#leadOwner').value=x[14]||'Renan';document.querySelector('#leadNeed').value=x[15]||'';document.querySelector('#leadNotes').value=x[16]||''}d.showModal()}
+function openLead(index=null){if(MAQON_CLOUD_OPERATIONS){maqonOpenCloudOperations();return;}editingIndex=index;document.querySelector('#leadDialogTitle').textContent=index===null?'Novo Lead':'Editar Lead';if(index===null){form.reset();document.querySelector('#leadStatus').value='Novo Lead';document.querySelector('#leadPhase').value='Qualificação';document.querySelector('#leadOrigin').value='Manual';document.querySelector('#leadOwner').value='Renan';document.querySelector('#leadMode').value='Compra'}else{const x=leads[index];document.querySelector('#name').value=x[1]||'';document.querySelector('#company').value=x[2]||'';document.querySelector('#phone').value=x[3]||'';document.querySelector('#interest').value=x[4]||'Escavadeira';document.querySelector('#leadStatus').value=x[5]||'Novo Lead';document.querySelector('#leadPhase').value=x[6]||'Qualificação';document.querySelector('#leadOrigin').value=x[7]||'Manual';document.querySelector('#leadEmail').value=x[8]||'';document.querySelector('#leadCity').value=x[9]||'';document.querySelector('#leadUF').value=x[10]||'';document.querySelector('#leadBrandModel').value=x[11]||'';document.querySelector('#leadMode').value=x[12]||'Compra';document.querySelector('#leadBudget').value=x[13]||'';document.querySelector('#leadOwner').value=x[14]||'Renan';document.querySelector('#leadNeed').value=x[15]||'';document.querySelector('#leadNotes').value=x[16]||''}d.showModal()}
 document.querySelector('#newLead').onclick=()=>openLead();document.querySelector('#quickLead').onclick=()=>openLead();document.querySelector('#cancelLead').onclick=()=>d.close();
 form.addEventListener('submit',e=>{e.preventDefault();const n=document.querySelector('#name').value.trim();if(!n)return;const status=document.querySelector('#leadStatus').value;const phase=document.querySelector('#leadPhase').value;const origin=document.querySelector('#leadOrigin').value;const row=[new Date().toLocaleDateString('pt-BR'),n,document.querySelector('#company').value.trim(),document.querySelector('#phone').value.trim(),document.querySelector('#interest').value,status,phase,origin,document.querySelector('#leadEmail').value.trim(),document.querySelector('#leadCity').value.trim(),document.querySelector('#leadUF').value.trim().toUpperCase(),document.querySelector('#leadBrandModel').value.trim(),document.querySelector('#leadMode').value,document.querySelector('#leadBudget').value,document.querySelector('#leadOwner').value,document.querySelector('#leadNeed').value.trim(),document.querySelector('#leadNotes').value.trim()];if(editingIndex===null)leads.unshift(row);else leads[editingIndex]=[leads[editingIndex][0],...row.slice(1)];persist();render();d.close();form.reset()});
 function sendLeadToTechnicalAnalysis(index){
@@ -78,8 +85,8 @@ function removeLegacyDemoData(){
  try{const x=JSON.parse(localStorage.getItem(EQUIPMENT_KEY));if(Array.isArray(x)&&x.length===3&&['320','L90H','STC250T5'].every((n,i)=>x[i]&&x[i][2]===n)){localStorage.removeItem(EQUIPMENT_KEY);equipments=[]}}catch(e){}
 }
 
-function loadEquipment(){try{const x=JSON.parse(localStorage.getItem(EQUIPMENT_KEY));return Array.isArray(x)?x:[]}catch(e){return []}}
-function persistEquipment(){localStorage.setItem(EQUIPMENT_KEY,JSON.stringify(equipments))}
+function loadEquipment(){return MAQON_CLOUD_OPERATIONS?[]:JSON.parse(localStorage.getItem(EQUIPMENT_KEY)||'[]')}
+function persistEquipment(){if(MAQON_CLOUD_OPERATIONS){maqonOpenCloudOperations();return false;}localStorage.setItem(EQUIPMENT_KEY,JSON.stringify(equipments));return true;}
 function brl(v){const n=Number(v);return Number.isFinite(n)?n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}):''}
 function renderEquipment(a=equipments){const body=document.querySelector('#equipmentRows');if(!body)return;body.innerHTML=a.map(x=>{const i=equipments.indexOf(x);return `<tr><td>${esc(x[0])}</td><td>${esc(x[1])}</td><td>${esc(x[2])}</td><td>${esc(x[3])}</td><td>${esc(x[4])} h</td><td>${brl(x[5])}</td><td>${esc(x[6])} L/h</td><td>${brl(x[7])}/h</td><td>${esc(x[8])}%</td><td>${esc(x[9])}</td><td class="actions"><button type="button" data-eq-edit="${i}" title="Editar">✎</button> <button type="button" data-eq-delete="${i}" title="Excluir">▣</button></td></tr>`}).join('')}
 const eqd=document.querySelector('#equipmentDialog'),eqf=document.querySelector('#equipmentForm');
@@ -159,8 +166,8 @@ analysisOptions();
 // MAQON - Propostas Comerciais
 const PROPOSAL_KEY='maqon_propostas_v1';
 let proposals=loadProposals(),editingProposal=null;setTimeout(()=>{try{renderLiveSummary()}catch(e){}},0);
-function loadProposals(){try{const x=JSON.parse(localStorage.getItem(PROPOSAL_KEY));return Array.isArray(x)?x:[]}catch(e){return []}}
-function persistProposals(){localStorage.setItem(PROPOSAL_KEY,JSON.stringify(proposals))}
+function loadProposals(){return MAQON_CLOUD_OPERATIONS?[]:JSON.parse(localStorage.getItem(PROPOSAL_KEY)||'[]')}
+function persistProposals(){if(MAQON_CLOUD_OPERATIONS){maqonOpenCloudOperations();return false;}localStorage.setItem(PROPOSAL_KEY,JSON.stringify(proposals));return true;}
 function proposalNumber(i){return 'PROP-'+String(i+1).padStart(4,'0')}
 function renderProposals(a=proposals){const body=document.querySelector('#proposalRows');if(!body)return;body.innerHTML=a.map(p=>{const i=proposals.indexOf(p);return `<tr><td>${proposalNumber(i)}</td><td>${esc(p.client)}</td><td>${esc(p.company)}</td><td>${esc(p.equipment)}</td><td>${esc(p.mode)}</td><td>${brl(p.value)}</td><td>${esc(p.validity||'—')}</td><td>${badge(p.status)}</td><td class="actions"><button data-pr-view="${i}" title="Visualizar">▤</button> <button data-pr-edit="${i}" title="Editar">✎</button> <button data-pr-delete="${i}" title="Excluir">▣</button></td></tr>`}).join('');document.querySelector('#proposalCount').textContent=proposals.length;document.querySelector('#proposalSentCount').textContent=proposals.filter(p=>['Enviada','Em negociação','Aprovada'].includes(p.status)).length}
 function proposalOptions(){const c=document.querySelector('#proposalClient'),e=document.querySelector('#proposalEquipment');if(!c||!e)return;c.innerHTML='<option value="">Selecione o cliente / lead</option>'+leads.map((x,i)=>`<option value="${i}">${esc(x[1])}${x[2]?' — '+esc(x[2]):''}</option>`).join('');e.innerHTML='<option value="">Selecione o equipamento</option>'+equipments.map((x,i)=>`<option value="${i}">${esc(equipmentName(x))}</option>`).join('')}
