@@ -1,21 +1,30 @@
-/* MAQON V1.7 — dados de indicadores somente leitura, separados por empresa (RLS obrigatório). */
-(async()=>{
- 'use strict';
+/* MAQON: indicadores de homologação baseados em contagem exata do Supabase.
+   NÃO constitui substituição dos módulos locais, nem prova de RLS. */
+(()=>{'use strict';
  const cfg=window.MAQON_SUPABASE_CONFIG||{};
  if(!window.supabase?.createClient||!cfg.url||!cfg.publishableKey)return;
  const db=window.supabase.createClient(cfg.url,cfg.publishableKey);
- async function load(){
+ let seq=0;
+ async function refresh(){
+   const turn=++seq;
+   // Dashboard não deve exibir indicadores empresariais se seu bloqueio estiver ativo.
+   if(document.documentElement.classList.contains('maqon-auth-locked'))return;
    const {data:{user},error}=await db.auth.getUser();if(error||!user)return;
-   const membership=await db.from('maqon_usuarios').select('empresa_id').eq('usuario_id',user.id);
-   if(membership.error||membership.data?.length!==1)return;
-   const company=membership.data[0].empresa_id;
-   const tables=[['maqon_equipamentos','#equipmentCount'],['maqon_propostas','#fpc'],['maqon_leads','#kpiTotal'],['maqon_manutencoes','#maintenanceCount']];
-   for(const [table,selector] of tables){
-     const result=await db.from(table).select('id,empresa_id').eq('empresa_id',company).limit(1000);
-     if(result.error||result.data?.some(x=>x.empresa_id!==company))continue;
-     // Atualização de números apenas quando o seletor existe; sem sobrescrever módulos.
-     const el=document.querySelector(selector);if(el)el.textContent=String(result.data?.length||0);
+   const member=await db.from('maqon_usuarios').select('empresa_id').eq('usuario_id',user.id);
+   if(member.error||member.data?.length!==1||!member.data[0].empresa_id)return;
+   const cid=member.data[0].empresa_id;
+   const pairs=[['maqon_equipamentos','#equipmentCount'],['maqon_propostas','#fpc'],['maqon_leads','#kpiTotal'],['maqon_manutencoes','#maintenanceCount']];
+   for(const [table,selector] of pairs){
+     if(seq!==turn||document.documentElement.classList.contains('maqon-auth-locked'))return;
+     const r=await db.from(table).select('id',{head:true,count:'exact'}).eq('empresa_id',cid);
+     if(r.error||typeof r.count!=='number')continue;
+     const el=document.querySelector(selector);if(el)el.textContent=String(r.count);
    }
  }
- document.addEventListener('DOMContentLoaded',()=>load().catch(()=>{}));
+ // O controlador principal pode completar a autenticação depois do carregamento da página.
+ document.addEventListener('DOMContentLoaded',()=>{
+   const observer=new MutationObserver(()=>{if(!document.documentElement.classList.contains('maqon-auth-locked'))refresh().catch(()=>{});else seq++});
+   observer.observe(document.documentElement,{attributes:true,attributeFilter:['class']});
+   refresh().catch(()=>{});
+ });
 })();

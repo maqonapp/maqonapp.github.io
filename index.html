@@ -290,10 +290,10 @@
       </div>
     </div>
   </form>
-</dialog><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="maqon-supabase-config.js?v=171"></script><script src="maqon-dashboard-login.js?v=171"></script><script src="app.js?v=172"></script><script src="maqon-indicadores-supabase.js?v=172"></script><script src="maqon-equipment-library.js?v=159"></script><script src="maqon-relatorios-pdf.js?v=1511"></script>
+</dialog><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="maqon-supabase-config.js?v=171"></script><script src="maqon-access-config.js?v=170"></script><script src="maqon-dashboard-login.js?v=172"></script><script src="app.js?v=173"></script><script src="maqon-indicadores-supabase.js?v=173"></script><script src="maqon-equipment-library.js?v=159"></script><script src="maqon-relatorios-pdf.js?v=1511"></script>
 <script src="maqon-propostas-premium.js?v=1512"></script>
 <script src="maqon-manutencao.js?v=1513"></script><script src="maqon-manutencao-documentos.js?v=15142"></script>
-<!-- MAQON V1.7: acesso às operações Supabase já homologadas; não é contratação ativa. -->
+<!-- Atalho de homologação: visível apenas quando o controle de acesso do dashboard liberar a sessão. -->
 <a id="maqon-operacoes-cloud-link" href="maqon-acesso-piloto.html" style="position:fixed;right:18px;bottom:18px;z-index:9000;display:none;background:#ffc900;color:#101d22;font:700 14px Arial,sans-serif;border-radius:9px;padding:13px 17px;box-shadow:0 5px 20px #0005;text-decoration:none">Cadastros na nuvem · Supabase</a>
-<script>document.addEventListener('DOMContentLoaded',()=>{const link=document.getElementById('maqon-operacoes-cloud-link');const update=()=>{link.style.display=document.documentElement.classList.contains('maqon-auth-locked')?'none':'block'};update();new MutationObserver(update).observe(document.documentElement,{attributes:true,attributeFilter:['class']});});</script>
+<script>document.addEventListener('DOMContentLoaded',()=>{const link=document.getElementById('maqon-operacoes-cloud-link');if(!link)return;const update=()=>{link.style.display=document.documentElement.classList.contains('maqon-auth-locked')?'none':'block'};update();new MutationObserver(update).observe(document.documentElement,{attributes:true,attributeFilter:['class']});});</script>
 </body></html>
