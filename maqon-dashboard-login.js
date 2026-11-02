@@ -7,6 +7,8 @@
  const form=document.getElementById('maqon-login-form');
  const signout=document.getElementById('maqon-logout');
  const companyEl=document.getElementById('maqon-empresa-sessao');
+ const sidebarName=document.getElementById('maqon-sidebar-company');
+ const sidebarRole=document.getElementById('maqon-sidebar-role');
  const cfg=window.MAQON_SUPABASE_CONFIG||{};
  const fail=(s)=>{if(msg)msg.textContent=s;};
  document.documentElement.classList.add('maqon-auth-locked');
@@ -31,7 +33,7 @@
      throw Error('Migração de dados do dashboard pendente; somente ambiente de homologação.');
    return result;
  }
- const lock=()=>{ticket++;verifiedUser=null;document.documentElement.classList.add('maqon-auth-locked');overlay.hidden=false;if(companyEl)companyEl.textContent='';if(signout)signout.hidden=true;};
+ const lock=()=>{ticket++;verifiedUser=null;document.documentElement.classList.add('maqon-auth-locked');overlay.hidden=false;if(companyEl)companyEl.textContent='';if(sidebarName)sidebarName.textContent='MAQON';if(sidebarRole)sidebarRole.textContent='Acesso à plataforma';if(signout)signout.hidden=true;};
  const check=async()=>{const now=++ticket;document.documentElement.classList.add('maqon-auth-locked');overlay.hidden=false;fail('Validando sua conta de homologação...');
   try{
    const {data:{user},error}=await db.auth.getUser();if(error||!user)throw Error('Entre com uma conta autorizada.');
@@ -43,8 +45,8 @@
    verifiedUser=user.id;
    const company=r.data[0].maqon_empresas?.nome||'Empresa vinculada';
    if(companyEl)companyEl.textContent=company+' · Homologação';
-   const name=document.querySelector('.side-title b');if(name)name.textContent=company;
-   const role=document.querySelector('.side-title small');if(role)role.textContent='Conta de homologação';
+   if(sidebarName)sidebarName.textContent=company;
+   if(sidebarRole)sidebarRole.textContent='Conta da empresa';
    overlay.hidden=true;document.documentElement.classList.remove('maqon-auth-locked');if(signout)signout.hidden=false;
   }catch(e){if(now!==ticket)return;lock();fail(e.message||'Falha de autenticação.');}
  };
